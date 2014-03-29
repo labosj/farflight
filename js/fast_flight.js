@@ -1,8 +1,21 @@
-function Camera() {
+function Camera(canvas) {
   this.position = [0.0, 100.0]; // z is always 0.0
   //this.direction = [0.0, 0.0, 1.0];
   this.far = 500.0;
   this.projectedVertexs = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  this.viewportHeight = canvas.height;
+  this.viewportHalfWidth = canvas.width / 2;
+}
+
+Camera.prototype.setPosition = function(x, y) {
+  this.position[0] = x - this.viewportHalfWidth;
+  this.position[1] = this.viewportHeight - y;
+
+  if      ( this.position[0] < -this.viewportHalfWidth ) this.position[0] = -this.viewportHalfWidth;
+  else if ( this.position[0] >  this.viewportHalfWidth ) this.position[0] =  this.viewportHalfWidth;
+  
+  if      ( this.position[1] < 0 )                   this.position[1] = 0;
+  else if ( this.position[1] > this.viewportHeight ) this.position[1] = this.viewportHeight; 
 }
 
 Camera.prototype.projectShape = function(shape) {
@@ -78,13 +91,11 @@ Drawer.prototype.drawInfo = function() {
     context.fillText('You have crashed', 400, 280);
     context.fillText('Click to continue', 400, 350);
     context.font = '15px monospace';
-    context.fillText(distanceCounter / 30 + ' meters in ' + tickCounter / 100 + ' seconds', 400, 300);
-    
+    context.fillText(distanceCounter / 30 + ' meters in ' + tickCounter / 100 + ' seconds', 400, 300); 
   }
 }
 
 function Shape() {
-  this.edges = [[0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3], [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [7, 6]];
   this.vertexs = [[1.0, 1.0, 1.0], [1.0, 0.0, 1.0], [-1.0, 1.0, 1.0], [-1.0, 0.0, 1.0], [1.0, 1.0, -1.0], [1.0, 0.0, -1.0], [-1.0, 1.0, -1.0], [-1.0, 0.0, -1.0]];
   this.position = [0.0, 0.0, 1000.0];
   this.width = 1.0;
@@ -155,7 +166,7 @@ function getColor() {
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext("2d");
 
-var camera = new Camera();
+var camera = new Camera(canvas);
 var drawer = new Drawer(context, camera);
 var gameState = 0; //0: TITLE, 1:GAME, 2:GAMEOVER
 var velocity = 3.0;
@@ -173,8 +184,7 @@ for ( var i = 0 ; i < 20 ; i++ ) {
 
 canvas.addEventListener("mousemove", function(event) {
   var rect = canvas.getBoundingClientRect();
-  camera.position[0] = (event.pageX - rect.left) - (canvas.width / 2);
-  camera.position[1] = canvas.height - (event.pageY - rect.top);
+  camera.setPosition(event.pageX - rect.left, event.pageY - rect.top)
 }, false);
 
 canvas.addEventListener("mousedown", function(event) {
@@ -197,18 +207,16 @@ var tickCounter = 0;
 setInterval( function()
 {
   drawer.clearScreen();
-  var gameOver = false; 
   for ( var i = 0 ; i < shapes.length ; i++ ) {
     var shape = shapes[i];
     shape.position[2] -= velocity;
     if ( shape.nearest() < 0.0 ) {
-      if ( gameState == 1 && shape.collideWithPoint(camera.position[0], camera.position[1]) ) gameOver = true;
+      if ( gameState == 1 && shape.collideWithPoint(camera.position[0], camera.position[1]) ) gameState = 2;
       shape.reset();
     }
     drawer.drawShape(shape);
   }
   drawer.drawInfo();
-  if ( gameOver ) gameState = 2;
   if ( gameState == 1 ) {
     distanceCounter += velocity;
     tickCounter++;

@@ -1,0 +1,40 @@
+body {
+  background: #111;
+  color: #070;
+  font-family: monospace;
+  font-size: 14pt; 
+  margin: 0;
+  padding: 0;
+}
+
+#container {
+  margin: 0px auto;
+  width: 800px;
+}
+
+#heading {
+  display: block;
+  margin: 0;
+}
+
+h1#title {
+  display: block;
+  font-size: 80px;
+  font-weight: bold;
+  margin: 0;
+}
+
+#subtitle {
+  display: block;
+  margin: 0;
+}
+
+.game-intro {
+  display: block;
+  margin: 0;
+}
+
+#canvas {
+  width: 800px;
+  height: 600px;
+}

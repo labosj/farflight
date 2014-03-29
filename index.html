@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Fast Flight</title>
-<link rel="stylesheet" type="text/css" href="style.css"/>
-<div id="left" class="row">
-<h1>Fast Flight</h1>
-by Edwin Rodriguez<br>
-edwrodrig@gmail.com
-<h2>Goal</h2>
-Flight as far as you can without crashing.<br>
-<h2>How to play</h2>
-<ul>
-<li>Move with the mouse.
-<li>Don't crash with the blocks.
-<li>You're not the cursor. You crash when the center of the screen meets a block.
-<li>Increase velocity by clicking.
-<li>Be careful accelerating, you can't decrease velocity.
-<li><a href="http://youtu.be/dBZl9ea36iQ">Endor</a>
-</ul>
+<link rel="stylesheet" type="text/css" href="style/style.css"/>
+<div id="container">
+  <div id="header">
+    <h1 id="title">Fast Flight</h1>
+  </div>
+  <div id="sub-title">
+      <p class="game-intro">Flight as far as you can without crashing</p>
+  </div>
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <div id="game-info">
+    <h2>How to play</h2>
+    <ul>
+    <li>Move with the mouse.
+    <li>Don't crash with the blocks.
+    <li>You're not the cursor. You crash when the center of the screen meets a block.
+    <li>Increase velocity by clicking.
+    <li>Be careful accelerating, you can't decrease velocity.
+    <li>Feel like you're in <a href="http://youtu.be/dBZl9ea36iQ">Endor</a> 
+    </ul>
+  </div>
+  <hr>
+  <div id="footer">
+  Created by <strong>Edwin Rodriguez.</strong><br>
+  edwrodrig@gmail.com
+  </div>
 </div>
-<div id="container" class="row">
-<canvas id="canvas" width="800" height="600"></canvas>
-</div>
-<div id="right" class="row">
-</div>
-<script src="fast_flight.js"></script>
+<script src="js/fast_flight.js"></script>
