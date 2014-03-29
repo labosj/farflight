@@ -83,9 +83,9 @@ Drawer.prototype.drawTitleInfo = function(distance) {
   this.context.fillStyle = "yellow";
   this.context.textAlign = 'center';
   this.context.font = '15px monospace';
-  this.context.fillText("Longest distance", 400, 25);
+  this.context.fillText("Distance to beat", 400, 25);
   this.context.font = '25px monospace';
-  this.context.fillText((distance / 30) + ' m', 400, 50);
+  this.context.fillText((distance / 30 >> 0) + ' m', 400, 50);
 
   this.context.font = '60px monospace';
   this.context.fillText('FAR FLIGHT', 400, 200);
@@ -93,6 +93,17 @@ Drawer.prototype.drawTitleInfo = function(distance) {
   this.context.fillText('by Edwin Rodriguez', 400, 230);
   this.context.font = '25px monospace';
   this.context.fillText('Click to start', 400, 350);
+}
+
+Drawer.prototype.drawGameOverMessage = function(distance, time) {
+  this.context.textAlign = 'center';
+  this.context.font = '40px monospace';
+  this.context.fillText('GAME OVER', 400, 250);
+  this.context.font = '25px monospace';
+  this.context.fillText('You have crashed', 400, 280);
+  this.context.fillText('Click to continue', 400, 350);
+  this.context.font = '15px monospace';
+  this.context.fillText((distance / 30 >> 0) + ' meters in ' + (time / 100 >> 0) + ' seconds', 400, 300);   
 }
 
 Drawer.prototype.drawInfo = function(distance, time, velocity) {
@@ -107,25 +118,6 @@ Drawer.prototype.drawInfo = function(distance, time, velocity) {
   this.context.fillText("Distance", 400, 25);
   this.context.font = '25px monospace';
   this.context.fillText((distance / 30 >> 0) + ' m', 400, 50);
-
-  if ( game.gameState == 0 ) {
-    this.context.textAlign = 'center';
-    this.context.font = '60px monospace';
-    this.context.fillText('FAR FLIGHT', 400, 200);
-    this.context.font = '20px monospace';
-    this.context.fillText('by Edwin Rodriguez', 400, 230);
-    this.context.font = '25px monospace';
-    this.context.fillText('Click to start', 400, 350);
-  } else if ( game.gameState == 2 ) {
-    this.context.textAlign = 'center';
-    this.context.font = '40px monospace';
-    this.context.fillText('GAME OVER', 400, 250);
-    this.context.font = '25px monospace';
-    this.context.fillText('You have crashed', 400, 280);
-    this.context.fillText('Click to continue', 400, 350);
-    this.context.font = '15px monospace';
-    this.context.fillText(distance / 30 + ' meters in ' + time / 100 + ' seconds', 400, 300); 
-  }
 }
 
 function Shape() {
@@ -214,13 +206,8 @@ Game.prototype.setGameOver = function() {
   this.gameState = 2;
   this.drawer.backgroundColor = "#700";
 
-  if ( this.currentDistance > this.bestDistance ) {
+  if ( this.currentDistance > this.bestDistance )
     this.bestDistance = this.currentDistance;
-
-    var highScore = document.getElementById('high-score');
-    highScore.innerHTML = this.currentDistance / 30 + ' m';
-  }
-
 }
 
 var game = new Game();
@@ -265,6 +252,7 @@ setInterval( function() {
     game.currentTime++;
   } else if ( game.gameState == 2 ) {
     game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
+    game.drawer.drawGameOverMessage(game.currentDistance, game.currentTime, game.currentVelocity);
   } else {
     game.drawer.drawTitleInfo(game.bestDistance);
   }
