@@ -233,22 +233,29 @@ game.canvas.addEventListener("mousedown", function(event) {
     game.currentVelocity = 3.0;
   }
 }, false);
- 
-function draw() {  
-  game.drawer.clearScreen();
-  for ( var i = 0 ; i < game.shapes.length ; i++ )
-    game.drawer.drawShape(game.shapes[i]);
-  
-  if ( game.gameState == 1 ) {
-    game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
-  } else if ( game.gameState == 2 ) {
-    game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
-    game.drawer.drawGameOverMessage(game.currentDistance, game.currentTime, game.currentVelocity);
-  } else {
-    game.drawer.drawTitleInfo(game.bestDistance);
-  }    
 
-   requestAnimationFrame(draw);
+var now = Date.now();
+var then = now;
+var delta;
+function draw() {
+  requestAnimationFrame(draw);
+  now = Date.now();
+  delta = now - then;
+  if ( delta > 15 ) {
+    then = now;
+    game.drawer.clearScreen();
+    for ( var i = 0 ; i < game.shapes.length ; i++ )
+      game.drawer.drawShape(game.shapes[i]);
+    
+    if ( game.gameState == 1 ) {
+      game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
+    } else if ( game.gameState == 2 ) {
+      game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
+      game.drawer.drawGameOverMessage(game.currentDistance, game.currentTime, game.currentVelocity);
+    } else {
+      game.drawer.drawTitleInfo(game.bestDistance);
+    }        
+  }
 }
  
 draw();
