@@ -232,9 +232,28 @@ game.canvas.addEventListener("mousedown", function(event) {
     game.currentVelocity = 3.0;
   }
 }, false);
+ 
+function draw() {  
+  game.drawer.clearScreen();
+  for ( var i = 0 ; i < game.shapes.length ; i++ )
+    game.drawer.drawShape(game.shapes[i]);
+  
+  if ( game.gameState == 1 ) {
+    game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
+  } else if ( game.gameState == 2 ) {
+    game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
+    game.drawer.drawGameOverMessage(game.currentDistance, game.currentTime, game.currentVelocity);
+  } else {
+    game.drawer.drawTitleInfo(game.bestDistance);
+  }    
+
+   requestAnimationFrame(draw);
+}
+ 
+draw();
+
 
 setInterval( function() {
-  game.drawer.clearScreen();
   for ( var i = 0 ; i < game.shapes.length ; i++ ) {
     var shape = game.shapes[i];
     shape.positionZ -= game.currentVelocity;
@@ -243,17 +262,10 @@ setInterval( function() {
         game.setGameOver();
       shape.reset();
     }
-    game.drawer.drawShape(shape);
   }
   
   if ( game.gameState == 1 ) {
-    game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
     game.currentDistance += game.currentVelocity;
     game.currentTime++;
-  } else if ( game.gameState == 2 ) {
-    game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentVelocity);
-    game.drawer.drawGameOverMessage(game.currentDistance, game.currentTime, game.currentVelocity);
-  } else {
-    game.drawer.drawTitleInfo(game.bestDistance);
   }
 }, 10);
