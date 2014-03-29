@@ -12,9 +12,22 @@ body {
   width: 800px;
 }
 
-#heading {
+#header {
   display: block;
+  float: left;
   margin: 0;
+}
+
+#high-score {
+  display: block;
+  float: right;
+  height: 100px;
+  width: 200px;
+  margin: 0;
+  text-align: center;
+  background: #040;
+  color: #FF0;
+
 }
 
 h1#title {
