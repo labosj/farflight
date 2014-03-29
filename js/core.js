@@ -180,7 +180,7 @@ function Game() {
   this.currentDistance = 0;
   this.currentTime = 0;
   this.currentVelocity = 3.0;
-  this.bestDistance = 0.0;
+  this.bestDistance = window.localStorage.getItem("bestScore") || 0;
   this.shapes = [];
   this.gameState = 0; //0: TITLE, 1:GAME, 2:GAMEOVER
 
@@ -208,6 +208,7 @@ Game.prototype.setGameOver = function() {
 
   if ( this.currentDistance > this.bestDistance )
     this.bestDistance = this.currentDistance;
+    window.localStorage.setItem("bestScore", this.bestDistance);
 }
 
 var game = new Game();
