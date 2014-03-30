@@ -18,6 +18,18 @@ body {
   margin: 0;
 }
 
+#author {
+  display: block;
+  float: left;
+  margin: 0;
+}
+
+#donation {
+  display: block;
+  float: right;
+  margin: 0;  
+}
+
 h1#title {
   display: block;
   font-size: 80px;
