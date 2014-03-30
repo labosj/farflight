@@ -48,6 +48,7 @@ h1#title {
 }
 
 #canvas {
+  position: relative;
   width: 800px;
   height: 600px;
 }

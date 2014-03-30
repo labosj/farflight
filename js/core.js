@@ -1,20 +1,9 @@
 function Camera(canvas) {
-  this.position = [0.0, 100.0];
   this.far = 500.0;
+  this.position = [0.0, 100.0];
   this.projectedCoords = [[0, 0, 0, 0], [0, 0, 0, 0]];
-  this.viewportHeight = canvas.height;
   this.viewportHalfWidth = canvas.width / 2;
-}
-
-Camera.prototype.setPosition = function(x, y) {
-  this.position[0] = x - this.viewportHalfWidth;
-  this.position[1] = this.viewportHeight - y;
-
-  if      ( this.position[0] < -this.viewportHalfWidth ) this.position[0] = -this.viewportHalfWidth;
-  else if ( this.position[0] >  this.viewportHalfWidth ) this.position[0] =  this.viewportHalfWidth;
-  
-  if      ( this.position[1] < 0 )                   this.position[1] = 0;
-  else if ( this.position[1] > this.viewportHeight ) this.position[1] = this.viewportHeight; 
+  this.viewportHeight = canvas.height;
 }
 
 Camera.prototype.projectShape = function(shape) {
@@ -39,20 +28,23 @@ Camera.prototype.projectShape = function(shape) {
   this.projectedCoords[1][3] *= -scalar;
 }
 
+Camera.prototype.setPosition = function(x, y) {
+  this.position[0] = x - this.viewportHalfWidth;
+  this.position[1] = this.viewportHeight - y;
+
+  if      ( this.position[0] < -this.viewportHalfWidth ) this.position[0] = -this.viewportHalfWidth;
+  else if ( this.position[0] >  this.viewportHalfWidth ) this.position[0] =  this.viewportHalfWidth;
+  
+  if      ( this.position[1] < 0 )                   this.position[1] = 0;
+  else if ( this.position[1] > this.viewportHeight ) this.position[1] = this.viewportHeight; 
+}
+
 function Drawer(context, camera) {
-  this.context = context;
+  this.backgroundColor = "#000";
   this.camera = camera;
+  this.context = context;
   this.offsetX = context.canvas.width  / 2.0;
   this.offsetY = context.canvas.height / 2.0;
-  this.backgroundColor = "#000";
-}
-
-Drawer.prototype.setTitle = function() {
-  this.backgroundColor = "#000";
-}
-
-Drawer.prototype.setGame = function() {
-  this.backgroundColor = "#000";
 }
 
 Drawer.prototype.clearScreen = function() {
@@ -137,11 +129,24 @@ Drawer.prototype.drawInfo = function(distance, time, speed) {
 }
 
 function Shape() {
-  this.dimension = [[0.0, 0.0], [0.0, 0.0]];
   this.color = "green";
+  this.dimension = [[0.0, 0.0], [0.0, 0.0]];
 }
 
-Shape.prototype.height = 600.0;
+Shape.prototype.advance = function(distance) {
+  this.dimension[1][0] -= distance;
+  this.dimension[1][1] -= distance;
+}
+
+Shape.prototype.isBehindCamera = function() {
+  return this.dimension[1][0] < 0.0;
+}
+
+Shape.prototype.collideWithPoint = function(x) {
+  if ( x < this.dimension[0][0] ) return false;
+  if ( x > this.dimension[0][1] ) return false;
+  return true;
+}
 
 Shape.prototype.init = function(posZ, color) {
   var posX = Math.floor((Math.random() * 1000) - 500);
@@ -153,31 +158,90 @@ Shape.prototype.init = function(posZ, color) {
   this.color = color;
 }
 
-Shape.prototype.collideWithPoint = function(x) {
-  if ( x < this.dimension[0][0] ) return false;
-  if ( x > this.dimension[0][1] ) return false;
-  return true;
+Shape.prototype.height = 600.0;
+
+Shape.prototype.reset = function(color) {
+  this.init(3000.0 + this.dimension[1][0], color);
+}
+
+function Timer(interval) {
+  this.now = Date.now();
+  this.then = this.now;
+  this.delta = 0;
+  this.interval = interval;
+}
+
+Timer.prototype.advance = function() {
+  this.now = Date.now();
+  this.delta = this.now - this.then;
+  if ( this.delta > this.interval ) {
+    this.then = this.now;
+    return true;
+  }
+  return false;
 }
 
 function Game() {
   this.currentDistance = 0;
   this.currentTime = 0;
   this.currentSpeed = 3.0;
-  this.bestDistance = window.localStorage.getItem("bestScore") || 0;
-  this.shapes = [];
   this.gameState = 0; //0: TITLE, 1:GAME, 2:GAMEOVER
+  this.shapes = [];
 
+  this.bestDistance = window.localStorage.getItem("bestScore") || 0;
   this.canvas = document.getElementById('canvas');
   this.context = this.canvas.getContext("2d");
 
   this.camera = new Camera(this.canvas);
   this.drawer = new Drawer(this.context, this.camera);
+
+  this.actTimer = new Timer(0);
+  this.drawTimer = new Timer(15);
+}
+
+Game.prototype.advance = function() {
+  this.actTimer.advance();
+  var timeRatio = (this.actTimer.delta / 10.0);
+  var currentSpeed = this.currentSpeed * timeRatio;
+  var shape;
+  for ( var i = 0 ; i < this.shapes.length ; i++ ) {
+    shape = this.shapes[i];
+    shape.advance(currentSpeed);
+    if ( shape.isBehindCamera() ) {
+      if ( this.gameState == 1 && shape.collideWithPoint(this.camera.position[0]) )
+        this.setGameOver();
+      shape.reset(this.getShapeColor());
+    }
+  }
+  
+  if ( this.gameState == 1 ) {
+    this.currentDistance += currentSpeed;
+    this.currentTime += timeRatio;
+  }
+}
+
+Game.prototype.draw = function() {
+  if ( this.drawTimer.advance() ) {
+    this.drawer.clearScreen();
+    for ( var i = 0 ; i < this.shapes.length ; i++ )
+      this.drawer.drawShape(this.shapes[i]);
+    
+    if ( this.gameState == 1 ) {
+      this.drawer.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
+    } else if ( this.gameState == 2 ) {
+      this.drawer.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
+      this.drawer.drawGameOverMessage(this.currentDistance, this.currentTime, this.currentSpeed);
+    } else {
+      this.drawer.drawTitleInfo(this.bestDistance);
+    }        
+  }
 }
 
 Game.prototype.initShapes = function() {
   var step = 3000.0 / 20;
+  var shape;
   for ( var i = 0 ; i < 20 ; i++ ) {
-    var shape = new Shape();
+    shape = new Shape();
     shape.init(Math.floor(3000.0 - (step * i)), this.getShapeColor());
     this.shapes[i] = shape;
   } 
@@ -200,80 +264,40 @@ Game.prototype.setGameOver = function() {
   }
 }
 
+Game.prototype.setGameTitle = function() {
+  this.drawer.backgroundColor = "#000";
+  this.gameState = 0;
+  this.currentSpeed = 3.0;  
+}
+
+Game.prototype.setGameStart = function() {
+  this.gameState = 1;
+  this.currentDistance = 0;
+  this.currentTime = 0;
+  this.currentSpeed = 3.0;
+}
+
 var game = new Game();
 game.initShapes();
 
 game.canvas.addEventListener("mousemove", function(event) {
-  var rect = game.canvas.getBoundingClientRect();
-  game.camera.setPosition(event.pageX - rect.left, event.pageY - rect.top)
+  game.camera.setPosition(event.pageX - game.canvas.offsetLeft,
+                          event.pageY - game.canvas.offsetTop);
 }, false);
+
 
 game.canvas.addEventListener("mousedown", function(event) {
-  if ( game.gameState == 1 ) {
-    game.currentSpeed += 3.0;
-  } else if ( game.gameState == 2) {
-    game.drawer.setTitle();
-    game.gameState = 0;
-    game.currentSpeed = 3.0;
-  } else {
-    game.gameState = 1;
-    game.currentDistance = 0;
-    game.currentTime = 0;
-    game.currentSpeed = 3.0;
-  }
+  if      ( game.gameState == 1 ) game.currentSpeed += 3.0;
+  else if ( game.gameState == 2 ) game.setGameTitle();
+  else                            game.setGameStart();
 }, false);
 
-var actNow = Date.now();
-var actThen = actNow;
-var actDelta = 0;
-
-setInterval( function() {
-  actNow = Date.now();
-  actDelta = actNow - actThen;
-  actThen = actNow;
-  var timeRatio = (actDelta / 10.0);
-  var currentSpeed = game.currentSpeed * timeRatio;
-  var shape;
-  for ( var i = 0 ; i < game.shapes.length ; i++ ) {
-    shape = game.shapes[i];
-    shape.dimension[1][0] -= currentSpeed;
-    shape.dimension[1][1] -= currentSpeed;
-    if ( shape.dimension[1][0] < 0.0 ) { //shape meets the camera
-      if ( game.gameState == 1 && shape.collideWithPoint(game.camera.position[0]) )
-        game.setGameOver();
-        shape.init(3000.0, game.getShapeColor());
-    }
-  }
-  
-  if ( game.gameState == 1 ) {
-    game.currentDistance += currentSpeed;
-    game.currentTime += timeRatio;
-  }
-}, 10);
-
-var drawNow = Date.now();
-var drawThen = drawNow;
-var drawDelta;
+setInterval( function() { game.advance(); }, 10);
 
 function draw() {
   requestAnimationFrame(draw);
-  drawNow = Date.now();
-  drawDelta = drawNow - drawThen;
-  if ( drawDelta > 15 ) {
-    drawThen = drawNow;
-    game.drawer.clearScreen();
-    for ( var i = 0 ; i < game.shapes.length ; i++ )
-      game.drawer.drawShape(game.shapes[i]);
-    
-    if ( game.gameState == 1 ) {
-      game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentSpeed);
-    } else if ( game.gameState == 2 ) {
-      game.drawer.drawInfo(game.currentDistance, game.currentTime, game.currentSpeed);
-      game.drawer.drawGameOverMessage(game.currentDistance, game.currentTime, game.currentSpeed);
-    } else {
-      game.drawer.drawTitleInfo(game.bestDistance);
-    }        
-  }
+  game.draw();
 }
- 
-draw();
+
+requestAnimationFrame(draw);
+
