@@ -206,6 +206,7 @@ function Game() {
   this.shapes = [];
 
   this.bestDistance = window.localStorage.getItem("bestScore") || 0;
+  this.bestDistanceBeated = false;
   this.canvas = document.getElementById('canvas');
   this.context = this.canvas.getContext("2d");
 
@@ -214,8 +215,6 @@ function Game() {
 
   this.actTimer = new Timer(0);
   this.drawTimer = new Timer(15);
-
-
 }
 
 Game.prototype.accel = function() {
@@ -239,7 +238,11 @@ Game.prototype.advance = function() {
   }
   
   if ( this.gameState == 1 ) {
-    if ( this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
+    if ( this.currentSpeed < 21.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
+    if ( !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
+      this.drawer.setIngameMessage("NEW RECORD!");
+      this.bestDistanceBeated = true;
+    }
     this.currentDistance += currentSpeed;
     this.currentTime += timeRatio;
   }
@@ -283,6 +286,8 @@ Game.prototype.getShapeColor = function() {
 Game.prototype.setGameOver = function() {
   this.gameState = 2;
   this.drawer.backgroundColor = "#700";
+  this.drawer.ingameMessageTime = 0;
+  this.bestDistanceBeated = false;
 
   if ( this.currentDistance > this.bestDistance ) {
     this.bestDistance = this.currentDistance;
