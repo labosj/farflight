@@ -45,6 +45,8 @@ function Drawer(context, camera) {
   this.context = context;
   this.offsetX = context.canvas.width  / 2.0;
   this.offsetY = context.canvas.height / 2.0;
+  this.ingameMessage = "";
+  this.ingameMessageTime = 0;
 }
 
 Drawer.prototype.clearScreen = function() {
@@ -84,6 +86,21 @@ Drawer.prototype.drawLine = function(x1, y1, x2, y2) {
   this.context.moveTo(this.camera.projectedCoords[0][x1] + this.offsetX, this.camera.projectedCoords[1][y1] + this.offsetY);
   this.context.lineTo(this.camera.projectedCoords[0][x2] + this.offsetX, this.camera.projectedCoords[1][y2] + this.offsetY);
   this.context.stroke();  
+}
+
+Drawer.prototype.setIngameMessage = function(message) {
+  this.ingameMessage = message;
+  this.ingameMessageTime = 1000.0;
+}
+
+Drawer.prototype.drawIngameMessage = function(time) {
+  if ( this.ingameMessageTime <= 0 ) return; 
+  this.context.globalAlpha = this.ingameMessageTime / 1000.0;
+  this.context.fillStyle = "yellow";
+  this.context.textAlign = 'center';
+  this.context.font = '40px monospace';
+  this.context.fillText(this.ingameMessage, 400, 250);
+  this.ingameMessageTime -= time;
 }
 
 Drawer.prototype.drawTitleInfo = function(distance) {
@@ -197,6 +214,13 @@ function Game() {
 
   this.actTimer = new Timer(0);
   this.drawTimer = new Timer(15);
+
+
+}
+
+Game.prototype.accel = function() {
+  this.currentSpeed += 3.0;
+  this.drawer.setIngameMessage("Speed up!");
 }
 
 Game.prototype.advance = function() {
@@ -215,6 +239,7 @@ Game.prototype.advance = function() {
   }
   
   if ( this.gameState == 1 ) {
+    if ( this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
     this.currentDistance += currentSpeed;
     this.currentTime += timeRatio;
   }
@@ -228,6 +253,7 @@ Game.prototype.draw = function() {
     
     if ( this.gameState == 1 ) {
       this.drawer.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
+      this.drawer.drawIngameMessage(this.drawTimer.delta);
     } else if ( this.gameState == 2 ) {
       this.drawer.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
       this.drawer.drawGameOverMessage(this.currentDistance, this.currentTime, this.currentSpeed);
@@ -287,7 +313,7 @@ game.canvas.addEventListener("mousemove", function(event) {
 
 
 game.canvas.addEventListener("mousedown", function(event) {
-  if      ( game.gameState == 1 ) game.currentSpeed += 3.0;
+  if      ( game.gameState == 1 ) game.accel();
   else if ( game.gameState == 2 ) game.setGameTitle();
   else                            game.setGameStart();
 }, false);
