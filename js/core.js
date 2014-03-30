@@ -234,15 +234,43 @@ game.canvas.addEventListener("mousedown", function(event) {
   }
 }, false);
 
-var now = Date.now();
-var then = now;
-var delta;
+var actNow = Date.now();
+var actThen = actNow;
+var actDelta = 0;
+
+setInterval( function() {
+  actNow = Date.now();
+  actDelta = actNow - actThen;
+  actThen = actNow;
+  var timeRatio = (actDelta / 10.0);
+  var currentVelocity = game.currentVelocity * timeRatio;
+  var shape;
+  for ( var i = 0 ; i < game.shapes.length ; i++ ) {
+    shape = game.shapes[i];
+    shape.positionZ -= currentVelocity;
+    if ( shape.nearest() < 0.0 ) {
+      if ( game.gameState == 1 && shape.collideWithPoint(game.camera.position[0], game.camera.position[1]) )
+        game.setGameOver();
+      shape.reset();
+    }
+  }
+  
+  if ( game.gameState == 1 ) {
+    game.currentDistance += currentVelocity;
+    game.currentTime += timeRatio;
+  }
+}, 10);
+
+var drawNow = Date.now();
+var drawThen = drawNow;
+var drawDelta;
+
 function draw() {
   requestAnimationFrame(draw);
-  now = Date.now();
-  delta = now - then;
-  if ( delta > 15 ) {
-    then = now;
+  drawNow = Date.now();
+  drawDelta = drawNow - drawThen;
+  if ( drawDelta > 15 ) {
+    drawThen = drawNow;
     game.drawer.clearScreen();
     for ( var i = 0 ; i < game.shapes.length ; i++ )
       game.drawer.drawShape(game.shapes[i]);
@@ -259,21 +287,3 @@ function draw() {
 }
  
 draw();
-
-
-setInterval( function() {
-  for ( var i = 0 ; i < game.shapes.length ; i++ ) {
-    var shape = game.shapes[i];
-    shape.positionZ -= game.currentVelocity;
-    if ( shape.nearest() < 0.0 ) {
-      if ( game.gameState == 1 && shape.collideWithPoint(game.camera.position[0], game.camera.position[1]) )
-        game.setGameOver();
-      shape.reset();
-    }
-  }
-  
-  if ( game.gameState == 1 ) {
-    game.currentDistance += game.currentVelocity;
-    game.currentTime++;
-  }
-}, 10);
