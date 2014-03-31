@@ -243,7 +243,7 @@ Game.prototype.advance = function() {
   if ( this.gameState == 1 ) {
     if ( this.currentSpeed <= 3.0 ) {
 		if ( this.tutorialCounter == 2 && this.currentTime > 700.0 ) {
-		  this.drawer.setIngameMessage("Increase speed by clicking");
+		  this.drawer.setIngameMessage("Click to speed up");
 		  this.tutorialCounter++;
 		} else if ( this.tutorialCounter == 1 && this.currentTime > 400.0 ) {
 		  this.drawer.setIngameMessage("Don't crash with the blocks");
