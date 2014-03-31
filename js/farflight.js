@@ -90,12 +90,12 @@ Drawer.prototype.drawLine = function(x1, y1, x2, y2) {
 
 Drawer.prototype.setIngameMessage = function(message) {
   this.ingameMessage = message;
-  this.ingameMessageTime = 1000.0;
+  this.ingameMessageTime = 1500.0;
 }
 
 Drawer.prototype.drawIngameMessage = function(time) {
   if ( this.ingameMessageTime <= 0 ) return; 
-  this.context.globalAlpha = this.ingameMessageTime / 1000.0;
+  this.context.globalAlpha = this.ingameMessageTime / 1500.0;
   this.context.fillStyle = "yellow";
   this.context.textAlign = 'center';
   this.context.font = '40px monospace';
@@ -212,6 +212,7 @@ function Game(canvasId) {
 
   this.camera = new Camera(this.canvas);
   this.drawer = new Drawer(this.context, this.camera);
+  this.tutorialCounter = 0;
 
   this.actTimer = new Timer(0);
   this.drawTimer = new Timer(15);
@@ -240,6 +241,18 @@ Game.prototype.advance = function() {
   }
   
   if ( this.gameState == 1 ) {
+    if ( this.currentSpeed <= 3.0 ) {
+		if ( this.tutorialCounter == 2 && this.currentTime > 700.0 ) {
+		  this.drawer.setIngameMessage("Increase speed by clicking");
+		  this.tutorialCounter++;
+		} else if ( this.tutorialCounter == 1 && this.currentTime > 400.0 ) {
+		  this.drawer.setIngameMessage("Don't crash with the blocks");
+		  this.tutorialCounter++;
+		} else if ( this.tutorialCounter == 0 && this.currentTime > 100.0 ) {
+		  this.drawer.setIngameMessage("Move with the mouse");
+		  this.tutorialCounter++;
+		}
+	}
     if ( this.currentSpeed < 21.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
     if ( !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
       this.drawer.setIngameMessage("NEW RECORD!");
