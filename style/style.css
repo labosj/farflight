@@ -12,28 +12,39 @@ body {
   width: 800px;
 }
 
-#header {
+.content {
   display: block;
-  float: left;
   margin: 0;
+  margin-bottom: 15px;
 }
 
-#author {
+#footer {
   display: block;
-  float: left;
-  margin: 0;
+  height: 50px;
 }
 
-#donation {
-  display: block;
-  float: right;
-  margin: 0;  
+.social {
+  margin-top: 15px;
 }
 
-h1#title {
+.button-container {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+h1 {
   display: block;
   font-size: 80px;
   font-weight: bold;
+  margin: 0;
+}
+
+h2 {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+ul {
   margin: 0;
 }
 
@@ -42,8 +53,7 @@ h1#title {
   margin: 0;
 }
 
-.game-intro {
-  display: block;
+p {
   margin: 0;
 }
 

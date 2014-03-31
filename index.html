@@ -1,40 +1,86 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Far Flight</title>
+<!-- Update your html tag to include the itemscope and itemtype attributes. -->
+<html itemscope itemtype="http://schema.org/WebApplication">
+
+<meta name="description" content="Flight as far as you can without crashing" />
+
+<!-- Schema.org markup for Google+ -->
+<meta itemprop="name" content="Far Flight">
+<meta itemprop="description" content="Flight as far as you can without crashing">
+<meta itemprop="image" content="http://www.edwrodrig.github.io/farflight/img/sshot.png">
+
+<!-- Twitter Card data -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Far Flight">
+<meta name="twitter:description" content="Flight as far as you can without crashing">
+<meta name="twitter:creator" content="@edwrodrig">
+<meta name="twitter:image" content="http://www.edwrodrig.github.io/farflight/img/sshot.png">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="Far Flight" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://www.edwrodrig.github.io/farflight/" />
+<meta property="og:image" content="http://www.edwrodrig.github.io/farflight/img/sshot.png" />
+<meta property="og:description" content="Flight as far as you can without crashing" />
+
 <link rel="stylesheet" type="text/css" href="style/style.css"/>
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/es_ES/all.js#xfbml=1&appId=668078686584090";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
 <div id="container">
-  <div id="header">
-    <h1 id="title">Far Flight</h1>
-    <p class="game-intro">Flight as far as you can without crashing</p>
+  <div class="content">
+    <h1 >Far Flight</h1>
+    Flight as far as you can without crashing
   </div>
   <canvas id="canvas" width="800" height="600"></canvas>
-  <div class="fb-like" data-href="http://edwrodrig.github.io/farflight/" data-layout="button" data-action="like" data-show-faces="false" data-share="true"></div>
-  <div id="game-info">
+  <div class="content social">
+    <!-- Twitter share button -->
+    <div class="button-container">
+      <a href="https://twitter.com/share" data-count="none" class="twitter-share-button" data-url="http://edwrodrig.github.io/farflight" data-text="I'm flying as far as I can in Far Flight" data-hashtags="FarFlight">Tweet</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+    </div>
+    <!-- Google Plus button -->
+    <div class="button-container">
+      <div class="g-plusone" data-annotation="none" data-size="medium" data-href="http://edwrodrig.github.io/farflight"></div>
+      <script type="text/javascript">
+        (function() {
+          var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+          po.src = 'https://apis.google.com/js/platform.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
+      </script>
+    </div>
+    <!-- Facebook like button -->
+    <div class="button-container">
+      <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fedwrodrig.github.io%2Ffarflight&amp;layout=button&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21&amp;appId=668078686584090" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px;"></iframe>
+    </div>
+
+  </div>
+  <hr>
+  <div class="content">
     <h2>How to play</h2>
     <ul>
-    <li>Move with the mouse.
-    <li>Don't crash with the blocks.
-    <li>You crash when the center of the screen meets a block.
-    <li>Increase speed by clicking.
-    <li>You can't decrease speed.
-    <li>Feel like you're in <a href="http://youtu.be/dBZl9ea36iQ">Endor</a> 
+      <li>Move with the mouse.
+      <li>Don't crash with the blocks.
+      <li>You crash when the center of the screen meets a block.
+      <li>Increase speed by clicking.
+      <li>You can't decrease speed.
+      <li>Feel like you're in <a href="http://youtu.be/dBZl9ea36iQ">Endor</a> 
     </ul>
   </div>
   <hr>
-  <div id="footer">
-    <div id="author">
-      Created by <strong>Edwin Rodriguez</strong><br>
-      edwrodrig@gmail.com
+  <div class="content">
+    <h2>Author</h2>
+    Edwin Rodríguez<br><br>
+    <div class="button-container">
+    <a href="https://twitter.com/edwrodrig" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @edwrodrig</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
     </div>
-    <div id="donation">
+  </div>
+  <hr>
+  <div id="content">
+    <h2>Donation</h2>
+    Contribute to Far Flight and my developments
+    <div class="button-container">
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
       <input type="hidden" name="cmd" value="_s-xclick">
       <input type="hidden" name="hosted_button_id" value="A6DS9NWRKW8S4">
@@ -42,6 +88,8 @@
       <img alt="" border="0" src="https://www.paypalobjects.com/es_XC/i/scr/pixel.gif" width="1" height="1">
       </form>
     </div>
+  </div>
+  <div id="footer">
   </div>
 </div>
 <a href="https://github.com/edwrodrig"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
