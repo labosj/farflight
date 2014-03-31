@@ -56,9 +56,3 @@ ul {
 p {
   margin: 0;
 }
-
-#canvas {
-  position: relative;
-  width: 800px;
-  height: 600px;
-}

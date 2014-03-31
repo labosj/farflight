@@ -198,7 +198,7 @@ Timer.prototype.advance = function() {
   return false;
 }
 
-function Game() {
+function Game(canvasId) {
   this.currentDistance = 0;
   this.currentTime = 0;
   this.currentSpeed = 3.0;
@@ -207,7 +207,7 @@ function Game() {
 
   this.bestDistance = window.localStorage.getItem("bestScore") || 0;
   this.bestDistanceBeated = false;
-  this.canvas = document.getElementById('canvas');
+  this.canvas = document.getElementById(canvasId);
   this.context = this.canvas.getContext("2d");
 
   this.camera = new Camera(this.canvas);
@@ -215,6 +215,8 @@ function Game() {
 
   this.actTimer = new Timer(0);
   this.drawTimer = new Timer(15);
+
+  this.init();
 }
 
 Game.prototype.accel = function() {
@@ -266,6 +268,33 @@ Game.prototype.draw = function() {
   }
 }
 
+Game.prototype.init = function() {
+  this.initShapes();
+
+  this.canvas.width = 800;
+  this.canvas.height = 600;
+
+  var camera = this.camera;
+  var game = this;
+
+  this.canvas.addEventListener("mousemove", function(event) {
+    camera.setPosition(event.pageX - canvas.offsetLeft,
+                       event.pageY - canvas.offsetTop);
+  }, false);
+
+
+  this.canvas.addEventListener("mousedown", function(event) { game.pressButton(); }, false);
+
+  setInterval( function() { game.advance(); }, 10);
+
+  function draw() {
+    requestAnimationFrame(draw);
+    game.draw();
+  }
+
+  requestAnimationFrame(draw);
+}
+
 Game.prototype.initShapes = function() {
   var step = 3000.0 / 20;
   var shape;
@@ -281,6 +310,12 @@ Game.prototype.getShapeColor = function() {
   if ( this.gameState == 1 ) color = (this.currentDistance / 1000) % 360;
   else color =  Math.floor((Math.random() * 360));
   return "hsl("+ color +", 100%, 50%)";
+}
+
+Game.prototype.pressButton = function() {
+  if      ( this.gameState == 1 ) this.accel();
+  else if ( this.gameState == 2 ) this.setGameTitle();
+  else                            this.setGameStart();
 }
 
 Game.prototype.setGameOver = function() {
@@ -308,27 +343,4 @@ Game.prototype.setGameStart = function() {
   this.currentSpeed = 3.0;
 }
 
-var game = new Game();
-game.initShapes();
-
-game.canvas.addEventListener("mousemove", function(event) {
-  game.camera.setPosition(event.pageX - game.canvas.offsetLeft,
-                          event.pageY - game.canvas.offsetTop);
-}, false);
-
-
-game.canvas.addEventListener("mousedown", function(event) {
-  if      ( game.gameState == 1 ) game.accel();
-  else if ( game.gameState == 2 ) game.setGameTitle();
-  else                            game.setGameStart();
-}, false);
-
-setInterval( function() { game.advance(); }, 10);
-
-function draw() {
-  requestAnimationFrame(draw);
-  game.draw();
-}
-
-requestAnimationFrame(draw);
-
+var game = new Game('canvas');
