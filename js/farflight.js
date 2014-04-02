@@ -108,27 +108,27 @@ Drawer.prototype.drawTitleInfo = function(distance) {
   this.context.fillStyle = "yellow";
   this.context.textAlign = 'center';
   this.context.font = '15px monospace';
-  this.context.fillText("Distance to beat", 400, 25);
+  this.context.fillText(words[0], 400, 25);
   this.context.font = '25px monospace';
-  this.context.fillText((distance / 30 >> 0) + ' m', 400, 50);
+  this.context.fillText(this.replaceText1(words[1], distance / 30 >> 0), 400, 50);
 
   this.context.font = '60px monospace';
-  this.context.fillText('FAR FLIGHT', 400, 200);
+  this.context.fillText(words[2], 400, 200);
   this.context.font = '20px monospace';
-  this.context.fillText('by Edwin Rodriguez', 400, 230);
+  this.context.fillText(words[3], 400, 230);
   this.context.font = '25px monospace';
-  this.context.fillText('Click to start', 400, 350);
+  this.context.fillText(words[4], 400, 350);
 }
 
 Drawer.prototype.drawGameOverMessage = function(distance, time) {
   this.context.textAlign = 'center';
   this.context.font = '40px monospace';
-  this.context.fillText('GAME OVER', 400, 250);
+  this.context.fillText(words[5], 400, 250);
   this.context.font = '25px monospace';
-  this.context.fillText('You have crashed', 400, 280);
-  this.context.fillText('Click to continue', 400, 350);
+  this.context.fillText(words[6], 400, 280);
+  this.context.fillText(words[7], 400, 350);
   this.context.font = '15px monospace';
-  this.context.fillText((distance / 30 >> 0) + ' meters in ' + (time / 100 >> 0) + ' seconds', 400, 300);   
+  this.context.fillText(this.replaceText2(words[8], distance / 30 >> 0, time / 100 >> 0), 400, 300);   
 }
 
 Drawer.prototype.drawInfo = function(distance, time, speed) {
@@ -136,13 +136,21 @@ Drawer.prototype.drawInfo = function(distance, time, speed) {
   this.context.fillStyle = "yellow";
   this.context.font = '15px monospace';
   this.context.textAlign = 'left';
-  this.context.fillText("Speed: " + speed / 0.3 + ' m/s',25,520);
-  this.context.fillText("Time:  " + (time / 100 >> 0) + ' s', 25,540);
+  this.context.fillText(this.replaceText1(words[9], speed / 0.3), 25, 520);
+  this.context.fillText(this.replaceText1(words[10], time / 100 >> 0), 25, 540);
 
   this.context.textAlign = 'center';
-  this.context.fillText("Distance", 400, 25);
+  this.context.fillText(words[11], 400, 25);
   this.context.font = '25px monospace';
-  this.context.fillText((distance / 30 >> 0) + ' m', 400, 50);
+  this.context.fillText(this.replaceText1(words[1], distance / 30 >> 0), 400, 50);
+}
+
+Drawer.prototype.replaceText1 = function(text, var1) {
+  return text.replace("$1", var1);
+}
+
+Drawer.prototype.replaceText2 = function(text, var1, var2) {
+  return text.replace("$1", var1).replace("$2", var2);
 }
 
 function Shape() {
@@ -207,7 +215,11 @@ function Game(canvasId) {
 
   this.bestDistance = window.localStorage.getItem("bestScore") || 0;
   this.bestDistanceBeated = false;
+
   this.canvas = document.getElementById(canvasId);
+  this.canvas.width = 800;
+  this.canvas.height = 600;
+
   this.context = this.canvas.getContext("2d");
 
   this.camera = new Camera(this.canvas);
@@ -222,7 +234,7 @@ function Game(canvasId) {
 
 Game.prototype.accel = function() {
   this.currentSpeed += 3.0;
-  this.drawer.setIngameMessage("Speed up!");
+  this.drawer.setIngameMessage(words[12]);
 }
 
 Game.prototype.advance = function() {
@@ -243,19 +255,19 @@ Game.prototype.advance = function() {
   if ( this.gameState == 1 ) {
     if ( this.currentSpeed <= 3.0 ) {
 		if ( this.tutorialCounter == 2 && this.currentTime > 700.0 ) {
-		  this.drawer.setIngameMessage("Click to speed up");
+		  this.drawer.setIngameMessage(words[13]);
 		  this.tutorialCounter++;
 		} else if ( this.tutorialCounter == 1 && this.currentTime > 400.0 ) {
-		  this.drawer.setIngameMessage("Don't crash with the blocks");
+		  this.drawer.setIngameMessage(words[14]);
 		  this.tutorialCounter++;
 		} else if ( this.tutorialCounter == 0 && this.currentTime > 100.0 ) {
-		  this.drawer.setIngameMessage("Move with the mouse");
+		  this.drawer.setIngameMessage(words[15]);
 		  this.tutorialCounter++;
 		}
 	}
     if ( this.currentSpeed < 21.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
     if ( !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
-      this.drawer.setIngameMessage("NEW RECORD!");
+      this.drawer.setIngameMessage(words[16]);
       this.bestDistanceBeated = true;
     }
     this.currentDistance += currentSpeed;
@@ -283,9 +295,6 @@ Game.prototype.draw = function() {
 
 Game.prototype.init = function() {
   this.initShapes();
-
-  this.canvas.width = 800;
-  this.canvas.height = 600;
 
   var camera = this.camera;
   var game = this;
@@ -355,5 +364,3 @@ Game.prototype.setGameStart = function() {
   this.currentTime = 0;
   this.currentSpeed = 3.0;
 }
-
-var game = new Game('canvas');
