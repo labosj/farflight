@@ -183,11 +183,18 @@ FF_Canvas.prototype.setContextFont = function(size) {
 }
 
 FF_Canvas.prototype.setSize = function(width, height) {
-  this.canvas.width = width;
-  this.canvas.height = height;
-  this.offsetX = width  / 2.0;
-  this.offsetY = height / 2.0;
-  this.ratio = width / 800.0;
+  var heightWidth = height * 4.0 / 3.0;
+  if ( width < heightWidth ) {
+    this.canvas.width = width;
+	this.canvas.height = width * 0.75;
+  } else {
+    this.canvas.width = heightWidth;
+	this.canvas.height = height;
+  }
+    
+  this.offsetX = this.canvas.width  / 2.0;
+  this.offsetY = this.canvas.height / 2.0;
+  this.ratio = this.canvas.width / 800.0;
   this.camera.setRatio(this.ratio);
 }
 
@@ -380,7 +387,7 @@ FF_Game.prototype.pressButton = function() {
 FF_Game.prototype.setGameOver = function() {
   this.gameState = 2;
   this.canvas.backgroundColor = "#700";
-  this.canvas.setSplashMessage("", 0);
+  this.canvas.showSplashMessage("", 0);
   this.bestDistanceBeated = false;
 
   if ( this.currentDistance > this.bestDistance ) {
