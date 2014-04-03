@@ -7,6 +7,12 @@ Flight as far as you can without crashing. You can play it [here](http://edwrodr
 * [Isometric Rotation](http://codepen.io/edwrodrig/pen/ynfJo)
 * [Fast Flight - Game Edition](http://codepen.io/edwrodrig/pen/KgbAt)
 
+##Screenshot
+<p align="center">
+  <img src="https://raw.githubusercontent.com/edwrodrig/farflight/master/img/game_sshot.png" alt="Screenshot"/>
+</p>
+Imagine you're evading blocks at high speed.
+
 ##Usage
 Just download and open *demo.html* in a browser, it is the minimal html code to include the game. Translations are in the *js/locale* folder so include what you want.
 
