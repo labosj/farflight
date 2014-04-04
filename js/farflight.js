@@ -2,8 +2,15 @@ function Camera(canvas) {
   this.far = 500.0;
   this.position = [0.0, 100.0];
   this.projectedCoords = [[0, 0, 0, 0], [0, 0, 0, 0]];
-  this.viewportHalfWidth = canvas.width / 2;
-  this.viewportHeight = canvas.height;
+  this.viewportHalfWidth = 400.0;
+  this.viewportHeight = 600.0;
+  this.ratio;
+  this.setRatio(canvas.width)
+}
+
+Camera.prototype.setRatio = function(width) {
+  this.ratio = width / 800.0;
+  this.far = 500.0 * this.ratio;
 }
 
 Camera.prototype.projectShape = function(shape) {
@@ -28,14 +35,9 @@ Camera.prototype.projectShape = function(shape) {
   this.projectedCoords[1][3] *= -scalar;
 }
 
-Camera.prototype.setDim = function(width, height) {
-  this.viewportHalfWidth = width / 2;
-  this.viewportHeight = height;
-}
-
 Camera.prototype.setPosition = function(x, y) {
-  this.position[0] = x - this.viewportHalfWidth;
-  this.position[1] = this.viewportHeight - y;
+  this.position[0] = x / this.ratio - this.viewportHalfWidth;
+  this.position[1] = this.viewportHeight - y / this.ratio;
 
   if      ( this.position[0] < -this.viewportHalfWidth ) this.position[0] = -this.viewportHalfWidth;
   else if ( this.position[0] >  this.viewportHalfWidth ) this.position[0] =  this.viewportHalfWidth;
@@ -58,6 +60,10 @@ Drawer.prototype.clearScreen = function() {
   this.context.fillStyle = this.backgroundColor;
   this.context.globalAlpha = 1.0;
   this.context.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+Drawer.prototype.transform = function(coord) {
+  return this.camera.ratio * coord; 
 }
 
 Drawer.prototype.drawShape = function(shape) {
@@ -93,6 +99,14 @@ Drawer.prototype.drawLine = function(x1, y1, x2, y2) {
   this.context.stroke();  
 }
 
+Drawer.prototype.setContextFont = function(size) {
+  this.context.font = this.transform(size) + 'px monospace'; 
+}
+
+Drawer.prototype.drawText = function(text, posX, posY) {
+  this.context.fillText(text, this.transform(posX), this.transform(posY));
+}
+
 Drawer.prototype.setIngameMessage = function(message) {
   this.ingameMessage = message;
   this.ingameMessageTime = 1500.0;
@@ -103,8 +117,8 @@ Drawer.prototype.drawIngameMessage = function(time) {
   this.context.globalAlpha = this.ingameMessageTime / 1500.0;
   this.context.fillStyle = "yellow";
   this.context.textAlign = 'center';
-  this.context.font = '40px monospace';
-  this.context.fillText(this.ingameMessage, 400, 250);
+  this.setContextFont(40);
+  this.drawText(this.ingameMessage, 400, 250);
   this.ingameMessageTime -= time;
 }
 
@@ -112,42 +126,42 @@ Drawer.prototype.drawTitleInfo = function(distance) {
   this.context.globalAlpha = 1.0;
   this.context.fillStyle = "yellow";
   this.context.textAlign = 'center';
-  this.context.font = '15px monospace';
-  this.context.fillText(words[0], 400, 25);
-  this.context.font = '25px monospace';
-  this.context.fillText(this.replaceText1(words[1], distance / 30 >> 0), 400, 50);
+  this.setContextFont(15);
+  this.drawText(words[0], 400, 25);
+  this.setContextFont(25);
+  this.drawText(this.replaceText1(words[1], distance / 30 >> 0), 400 , 50);
 
-  this.context.font = '60px monospace';
-  this.context.fillText(words[2], 400, 200);
-  this.context.font = '20px monospace';
-  this.context.fillText(words[3], 400, 230);
-  this.context.font = '25px monospace';
-  this.context.fillText(words[4], 400, 350);
+  this.setContextFont(60);
+  this.drawText(words[2], 400, 200);
+  this.setContextFont(20);
+  this.drawText(words[3], 400, 230);
+  this.setContextFont(25);
+  this.drawText(words[4], 400, 350);
 }
 
 Drawer.prototype.drawGameOverMessage = function(distance, time) {
   this.context.textAlign = 'center';
-  this.context.font = '40px monospace';
-  this.context.fillText(words[5], 400, 250);
-  this.context.font = '25px monospace';
-  this.context.fillText(words[6], 400, 280);
-  this.context.fillText(words[7], 400, 350);
-  this.context.font = '15px monospace';
-  this.context.fillText(this.replaceText2(words[8], distance / 30 >> 0, time / 100 >> 0), 400, 300);   
+  this.setContextFont(40);
+  this.drawText(words[5], 400, 250);
+  this.setContextFont(25);
+  this.drawText(words[6], 400, 280);
+  this.drawText(words[7], 400, 350);
+  this.setContextFont(15);
+  this.drawText(this.replaceText2(words[8], distance / 30 >> 0, time / 100 >> 0), 400, 300);   
 }
 
 Drawer.prototype.drawInfo = function(distance, time, speed) {
   this.context.globalAlpha = 1.0;
   this.context.fillStyle = "yellow";
-  this.context.font = '15px monospace';
+  this.setContextFont(15);
   this.context.textAlign = 'left';
-  this.context.fillText(this.replaceText1(words[9], speed), 25, 520);
-  this.context.fillText(this.replaceText1(words[10], time / 100 >> 0), 25, 540);
+  this.drawText(this.replaceText1(words[9], speed), 25, 520);
+  this.drawText(this.replaceText1(words[10], time / 100 >> 0), 25, 540);
 
   this.context.textAlign = 'center';
-  this.context.fillText(words[11], 400, 25);
-  this.context.font = '25px monospace';
-  this.context.fillText(this.replaceText1(words[1], distance / 30 >> 0), 400, 50);
+  this.drawText(words[11], 400, 25);
+  this.setContextFont(25);
+  this.drawText(this.replaceText1(words[1], distance / 30 >> 0), 400, 50);
 }
 
 Drawer.prototype.replaceText1 = function(text, var1) {
@@ -222,8 +236,8 @@ function Game(canvasId) {
   this.bestDistanceBeated = false;
 
   this.canvas = document.getElementById(canvasId);
-  this.canvas.width = 800;
-  this.canvas.height = 600;
+  this.canvas.width = 320;//800;
+  this.canvas.height = 240;//600;
 
   this.context = this.canvas.getContext("2d");
 
