@@ -28,6 +28,11 @@ Camera.prototype.projectShape = function(shape) {
   this.projectedCoords[1][3] *= -scalar;
 }
 
+Camera.prototype.setDim = function(width, height) {
+  this.viewportHalfWidth = width / 2;
+  this.viewportHeight = height;
+}
+
 Camera.prototype.setPosition = function(x, y) {
   this.position[0] = x - this.viewportHalfWidth;
   this.position[1] = this.viewportHeight - y;
@@ -136,7 +141,7 @@ Drawer.prototype.drawInfo = function(distance, time, speed) {
   this.context.fillStyle = "yellow";
   this.context.font = '15px monospace';
   this.context.textAlign = 'left';
-  this.context.fillText(this.replaceText1(words[9], speed / 0.3), 25, 520);
+  this.context.fillText(this.replaceText1(words[9], speed), 25, 520);
   this.context.fillText(this.replaceText1(words[10], time / 100 >> 0), 25, 540);
 
   this.context.textAlign = 'center';
@@ -159,8 +164,8 @@ function Shape() {
 }
 
 Shape.prototype.advance = function(distance) {
-  this.dimension[1][0] -= distance;
-  this.dimension[1][1] -= distance;
+  this.dimension[1][0] -= distance * 0.3;
+  this.dimension[1][1] -= distance * 0.3;
 }
 
 Shape.prototype.isBehindCamera = function() {
@@ -209,7 +214,7 @@ Timer.prototype.advance = function() {
 function Game(canvasId) {
   this.currentDistance = 0;
   this.currentTime = 0;
-  this.currentSpeed = 3.0;
+  this.currentSpeed = 10.0;
   this.gameState = 0; //0: TITLE, 1:GAME, 2:GAMEOVER
   this.shapes = [];
 
@@ -233,7 +238,7 @@ function Game(canvasId) {
 }
 
 Game.prototype.accel = function() {
-  this.currentSpeed += 3.0;
+  this.currentSpeed += 10.0;
   this.drawer.setIngameMessage(words[12]);
 }
 
@@ -253,7 +258,7 @@ Game.prototype.advance = function() {
   }
   
   if ( this.gameState == 1 ) {
-    if ( this.currentSpeed <= 3.0 ) {
+    if ( this.currentSpeed <= 10.0 ) {
 		if ( this.tutorialCounter == 2 && this.currentTime > 700.0 ) {
 		  this.drawer.setIngameMessage(words[13]);
 		  this.tutorialCounter++;
@@ -265,7 +270,7 @@ Game.prototype.advance = function() {
 		  this.tutorialCounter++;
 		}
 	}
-    if ( this.currentSpeed < 21.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
+    if ( this.currentSpeed < 70.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
     if ( !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
       this.drawer.setIngameMessage(words[16]);
       this.bestDistanceBeated = true;
@@ -355,12 +360,12 @@ Game.prototype.setGameOver = function() {
 Game.prototype.setGameTitle = function() {
   this.drawer.backgroundColor = "#000";
   this.gameState = 0;
-  this.currentSpeed = 3.0;  
+  this.currentSpeed = 10.0;  
 }
 
 Game.prototype.setGameStart = function() {
   this.gameState = 1;
   this.currentDistance = 0;
   this.currentTime = 0;
-  this.currentSpeed = 3.0;
+  this.currentSpeed = 10.0;
 }
