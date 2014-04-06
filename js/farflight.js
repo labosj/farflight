@@ -1,4 +1,3 @@
-//CAMERA
 function FF_Camera(ratio) {
   this.far = 500.0;
   this.position = [0.0, 100.0];
@@ -59,7 +58,7 @@ function FF_Canvas(canvasId, width, height) {
   this.offsetX;
   this.offsetY;
   this.splashMessage = new FF_SplashMessage();
-  this.ingameMessageTime = 0;
+  
   this.setSize(width, height);
 }
 
@@ -91,7 +90,7 @@ FF_Canvas.prototype.drawInfo = function(distance, time, speed) {
   this.context.textAlign = 'center';
   this.drawText(words[11], 400, 25);
   this.setContextFont(25);
-  this.drawText(this.replaceText1(words[1], distance / 30 >> 0), 400, 50);
+  this.drawText(this.replaceText1(words[1], distance / 100 >> 0), 400, 50);
 }
 
 FF_Canvas.prototype.drawLine = function(x1, y1, x2, y2) {
@@ -99,6 +98,32 @@ FF_Canvas.prototype.drawLine = function(x1, y1, x2, y2) {
   this.context.moveTo(this.camera.projectedCoords[0][x1] + this.offsetX, this.camera.projectedCoords[1][y1] + this.offsetY);
   this.context.lineTo(this.camera.projectedCoords[0][x2] + this.offsetX, this.camera.projectedCoords[1][y2] + this.offsetY);
   this.context.stroke();  
+}
+
+FF_Canvas.prototype.drawShape = function(shape) {
+  this.camera.projectShape(shape);
+
+  var alpha = (3000 - shape.dimension[1][0]) / 3000;
+  if ( shape.dimension[1][0] > 3000.0 ) alpha = 0.0;
+
+  this.context.strokeStyle = shape.color;
+  this.context.globalAlpha = alpha;
+
+  this.drawLine(0, 2, 1, 3);
+  this.drawLine(0, 2, 0, 0); 
+  this.drawLine(0, 2, 2, 2); 
+  
+  this.drawLine(2, 0, 3, 1);
+  this.drawLine(2, 0, 0, 0); 
+  this.drawLine(2, 0, 2, 2);
+
+  this.drawLine(3, 3, 1, 3); 
+  this.drawLine(3, 3, 3, 1);  
+  this.drawLine(3, 3, 2, 2);
+
+  this.drawLine(1, 1, 1, 3); 
+  this.drawLine(1, 1, 3, 1); 
+  this.drawLine(1, 1, 0, 0); 
 }
 
 FF_Canvas.prototype.drawSplashMessage = function(time) {
@@ -130,32 +155,6 @@ FF_Canvas.prototype.drawTitleInfo = function(distance) {
   this.drawText(words[3], 400, 230);
   this.setContextFont(25);
   this.drawText(words[4], 400, 350);
-}
-
-FF_Canvas.prototype.drawShape = function(shape) {
-  this.camera.projectShape(shape);
-
-  var alpha = (3000 - shape.dimension[1][0]) / 3000;
-  if ( shape.dimension[1][0] > 3000.0 ) alpha = 0.0;
-
-  this.context.strokeStyle = shape.color;
-  this.context.globalAlpha = alpha;
-
-  this.drawLine(0, 2, 1, 3);
-  this.drawLine(0, 2, 0, 0); 
-  this.drawLine(0, 2, 2, 2); 
-  
-  this.drawLine(2, 0, 3, 1);
-  this.drawLine(2, 0, 0, 0); 
-  this.drawLine(2, 0, 2, 2);
-
-  this.drawLine(3, 3, 1, 3); 
-  this.drawLine(3, 3, 3, 1);  
-  this.drawLine(3, 3, 2, 2);
-
-  this.drawLine(1, 1, 1, 3); 
-  this.drawLine(1, 1, 3, 1); 
-  this.drawLine(1, 1, 0, 0); 
 }
 
 FF_Canvas.prototype.replaceText1 = function(text, var1) {
@@ -260,14 +259,14 @@ FF_Timer.prototype.advance = function() {
 }
 
 function FF_Game(canvasId, width, height) {
+  this.bestDistance = window.localStorage.getItem("bestScore") || 0;
+  this.bestDistanceBeated = false;
+
   this.currentDistance = 0;
   this.currentTime = 0;
   this.currentSpeed = 10.0;
   this.gameState = 0; //0: TITLE, 1:GAME, 2:GAMEOVER
   this.shapes = [];
-
-  this.bestDistance = window.localStorage.getItem("bestScore") || 0;
-  this.bestDistanceBeated = false;
 
   this.canvas = new FF_Canvas(canvasId, width, height);
   this.tutorialCounter = 0;
@@ -338,6 +337,13 @@ FF_Game.prototype.draw = function() {
   }
 }
 
+FF_Game.prototype.getShapeColor = function() {
+  var color;
+  if ( this.gameState == 1 ) color = (this.currentDistance / 1000) % 360;
+  else color =  Math.floor((Math.random() * 360));
+  return "hsl("+ color +", 100%, 50%)";
+}
+
 FF_Game.prototype.init = function() {
   this.initShapes();
 
@@ -369,13 +375,6 @@ FF_Game.prototype.initShapes = function() {
     shape.init(Math.floor(3000.0 - (step * i)), this.getShapeColor());
     this.shapes[i] = shape;
   } 
-}
-
-FF_Game.prototype.getShapeColor = function() {
-  var color;
-  if ( this.gameState == 1 ) color = (this.currentDistance / 1000) % 360;
-  else color =  Math.floor((Math.random() * 360));
-  return "hsl("+ color +", 100%, 50%)";
 }
 
 FF_Game.prototype.pressButton = function() {

@@ -14,7 +14,7 @@ Flight as far as you can without crashing. You can play it [here](http://edwrodr
 Imagine you're evading blocks at high speed.
 
 ##Usage
-Just download and open *demo.html* in a browser, it is the minimal html code to include the game. Translations are in the *js/locale* folder so include what you want.
+Just download and open *demo.html* in a browser, it is the minimal html code to include the game. Translations are in the *locale* folder so include what you want.
 
 ##Contributing
 Feel free to fork and pull requests. If you find a error you're welcome to fix it. I'm not a web compatibility enthusiast so I think there are many cross-browser issues and unhandled errors. Also you can contribute making new translations. If you have an idea of gameplay please contact me.
