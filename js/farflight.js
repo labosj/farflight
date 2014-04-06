@@ -76,7 +76,7 @@ FF_Canvas.prototype.drawGameOverMessage = function(distance, time) {
   this.drawText(words[6], 400, 280);
   this.drawText(words[7], 400, 350);
   this.setContextFont(15);
-  this.drawText(this.replaceText2(words[8], distance / 30 >> 0, time / 100 >> 0), 400, 300);   
+  this.drawText(this.replaceText2(words[8], distance / 100 >> 0, time / 100 >> 0), 400, 300);   
 }
 
 FF_Canvas.prototype.drawInfo = function(distance, time, speed) {
