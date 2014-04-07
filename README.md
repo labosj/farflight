@@ -1,6 +1,6 @@
 #Far Flight
 
-Flight as far as you can without crashing. You can play it [here](http://edwrodrig.github.io/farflight/).
+Fly as far as you can without crashing. You can play it [here](http://edwrodrig.github.io/farflight/).
 
 ##Description
 **Far Flight** is a simple serverless *javascript* game that simulates 3d using *canvas* 2d context primitives. It's the final stage of several graphical demos originally programmed in *C++* using *Allegro* and then ported to *javascript*. Some of this demos are published in the following links:
