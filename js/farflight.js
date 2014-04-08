@@ -422,27 +422,27 @@ FF_Game.prototype.pressButton = function() {
 
 FF_Game.prototype.setGameOver = function() {
   this.gameState = 2;
-  this.setScreenTheme(this.gameOverTheme);
   this.bestDistanceBeated = false;
 
   if ( this.currentDistance > this.bestDistance ) {
     this.bestDistance = this.currentDistance;
     window.localStorage.setItem("bestScore", this.bestDistance);
   }
+  this.setScreenTheme(this.gameOverTheme);
 }
 
 FF_Game.prototype.setGameStart = function() {
-  this.setLevelScreenTheme(0);
   this.gameState = 1;
   this.currentDistance = 0;
   this.currentTime = 0;
   this.currentSpeed = 10.0;
+  this.setLevelScreenTheme(0);
 }
 
 FF_Game.prototype.setGameTitle = function() {
-  this.setScreenTheme(this.titleTheme);
   this.gameState = 0;
   this.currentSpeed = 10.0;  
+  this.setScreenTheme(this.titleTheme);
 }
 
 FF_Game.prototype.setSize = function(width, height) {
