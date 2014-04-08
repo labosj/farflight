@@ -390,12 +390,34 @@ FF_Game.prototype.init = function() {
   var canvas = this.canvas;
   var game = this;
 
-  canvas.canvas.addEventListener("mousemove", function(event) {
-    canvas.setCameraPosition(event.pageX, event.pageY);
-  }, false);
-
+  var touchAvailable = ('ontouchstart' in window) ? true : false;
 
   canvas.canvas.addEventListener("mousedown", function(event) { game.pressButton(); }, false);
+
+  if ( !touchAvailable ) {
+    canvas.canvas.addEventListener("mousemove", function(event) {
+    canvas.setCameraPosition(event.pageX, event.pageY);
+    }, false);
+  } else {
+    canvas.canvas.addEventListener('touchstart', function(e){
+    var touchObj = e.changedTouches[0];
+    canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
+    e.preventDefault()
+    }, false);
+
+    canvas.canvas.addEventListener('touchmove', function(e){
+    var touchObj = e.changedTouches[0];
+    canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
+    e.preventDefault()
+    }, false);
+
+    canvas.canvas.addEventListener('touchend touchcancel', function(e){
+    var touchObj = e.changedTouches[0];
+    canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
+    e.preventDefault()
+    }, false);
+  }
+
 
   setInterval( function() { game.advance(); }, 10);
 
