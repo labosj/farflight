@@ -311,6 +311,8 @@ function FF_Game(canvasId, width, height) {
 
   this.currentLevel = 0;
 
+  this.touchStart = 0;
+
   this.currentTheme = this.titleTheme;
 
   this.init();
@@ -392,29 +394,31 @@ FF_Game.prototype.init = function() {
 
   var touchAvailable = ('ontouchstart' in window) ? true : false;
 
-  canvas.canvas.addEventListener("mousedown", function(event) { game.pressButton(); }, false);
-
   if ( !touchAvailable ) {
     canvas.canvas.addEventListener("mousemove", function(event) {
     canvas.setCameraPosition(event.pageX, event.pageY);
     }, false);
+
+    canvas.canvas.addEventListener("mousedown", function(event) { game.pressButton(); }, false);
   } else {
-    canvas.canvas.addEventListener('touchstart', function(e){
-    var touchObj = e.changedTouches[0];
-    canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
-    e.preventDefault()
+    canvas.canvas.addEventListener('touchstart', function(e) {
+      this.touchStart = Date.now();
+      canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
+      e.preventDefault()
     }, false);
 
     canvas.canvas.addEventListener('touchmove', function(e){
-    var touchObj = e.changedTouches[0];
-    canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
-    e.preventDefault()
+      if ( Date.now() - this.touchStart > 300) {
+        var touchObj = e.changedTouches[0];
+        canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
+      }
+      e.preventDefault()
     }, false);
 
     canvas.canvas.addEventListener('touchend touchcancel', function(e){
-    var touchObj = e.changedTouches[0];
-    canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
-    e.preventDefault()
+      if ( Date.now() - this.touchStart <= 300)
+        game.pressButton();
+      e.preventDefault()
     }, false);
   }
 
