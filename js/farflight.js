@@ -238,7 +238,7 @@ FF_Shape.prototype.isBehindCamera = function() {
 }
 
 FF_Shape.prototype.reset = function(color) {
-  this.init(3000.0 + this.dimension[1][0], color);
+  this.init(3000.0 + (this.dimension[1][0]% 3000), color);
 }
 
 function FF_Timer(interval) {
@@ -310,7 +310,7 @@ FF_Game.prototype.advance = function() {
 		}
 	}
     if ( this.currentSpeed < 70.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
-    if ( !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
+    if ( this.bestDistance > 0.0 && !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
       this.canvas.showSplashMessage(words[16], 1500);
       this.bestDistanceBeated = true;
     }
