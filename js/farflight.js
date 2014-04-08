@@ -258,6 +258,12 @@ FF_Timer.prototype.advance = function() {
   return false;
 }
 
+function FF_ScreenTheme(title, backgroundColor, shapeColor) {
+  this.title = title;
+  this.backgroundColor = backgroundColor;
+  this.shapeColor = shapeColor;
+}
+
 function FF_Game(canvasId, width, height) {
   this.bestDistance = window.localStorage.getItem("bestScore") || 0;
   this.bestDistanceBeated = false;
@@ -273,6 +279,35 @@ function FF_Game(canvasId, width, height) {
 
   this.actTimer = new FF_Timer(0);
   this.drawTimer = new FF_Timer(15);
+
+  this.titleTheme = new FF_ScreenTheme("", "#000" , function() {
+    var color =  Math.floor((Math.random() * 360));
+    return "hsl("+ color +", 100%, 50%)";
+  });
+
+  this.gameOverTheme = new FF_ScreenTheme("", "#700" , function() {
+    var color =  Math.floor((Math.random() * 360));
+    return "hsl("+ color +", 100%, 50%)";
+  });
+  
+  this.levelThemes = [];
+  this.levelThemes[0] = new FF_ScreenTheme("", "#000" , function(distance) {
+    var color  = (distance * 360 / 100000) % 360;
+    return "hsl("+ color +", 100%, 50%)";
+  });
+  this.levelThemes[1] = new FF_ScreenTheme("Forest", "#030" , function() { return "#F80"; });
+  this.levelThemes[2] = new FF_ScreenTheme("Sea", "#002" , function() { return "#55F"; });
+  this.levelThemes[3] = new FF_ScreenTheme("Snow", "#FFF" , function() { return "#050"; });
+  this.levelThemes[4] = new FF_ScreenTheme("Night", "#003" , function() { return "#FF0"; });
+  this.levelThemes[5] = new FF_ScreenTheme("Rock", "#222" , function() { return "#888"; });
+  this.levelThemes[6] = new FF_ScreenTheme("Volcano", "#500" , function() { return "#FF0"; });
+  this.levelThemes[7] = new FF_ScreenTheme("Sky", "#00F" , function() { return "#FFF"; });
+  this.levelThemes[8] = new FF_ScreenTheme("Hell", "#F00" , function() { return "#000"; });
+
+  this.currentLevel = 0;
+
+  this.currentTheme = this.titleTheme;
+
   this.init();
 }
 
@@ -314,6 +349,9 @@ FF_Game.prototype.advance = function() {
       this.canvas.showSplashMessage(words[16], 1500);
       this.bestDistanceBeated = true;
     }
+    if ( (this.level + 1) * 100000 < this.currentDistance )
+      this.setLevelScreenTheme( this.level + 1);
+
     this.currentDistance += currentSpeed;
     this.currentTime += timeRatio;
   }
@@ -338,10 +376,7 @@ FF_Game.prototype.draw = function() {
 }
 
 FF_Game.prototype.getShapeColor = function() {
-  var color;
-  if ( this.gameState == 1 ) color = (this.currentDistance / 1000) % 360;
-  else color =  Math.floor((Math.random() * 360));
-  return "hsl("+ color +", 100%, 50%)";
+  return this.currentTheme.shapeColor(this.currentDistance);
 }
 
 FF_Game.prototype.init = function() {
@@ -385,8 +420,7 @@ FF_Game.prototype.pressButton = function() {
 
 FF_Game.prototype.setGameOver = function() {
   this.gameState = 2;
-  this.canvas.backgroundColor = "#700";
-  this.canvas.showSplashMessage("", 0);
+  this.setScreenTheme(this.gameOverTheme);
   this.bestDistanceBeated = false;
 
   if ( this.currentDistance > this.bestDistance ) {
@@ -396,6 +430,7 @@ FF_Game.prototype.setGameOver = function() {
 }
 
 FF_Game.prototype.setGameStart = function() {
+  this.setLevelScreenTheme(0);
   this.gameState = 1;
   this.currentDistance = 0;
   this.currentTime = 0;
@@ -403,11 +438,24 @@ FF_Game.prototype.setGameStart = function() {
 }
 
 FF_Game.prototype.setGameTitle = function() {
-  this.canvas.backgroundColor = "#000";
+  this.setScreenTheme(this.titleTheme);
   this.gameState = 0;
   this.currentSpeed = 10.0;  
 }
 
 FF_Game.prototype.setSize = function(width, height) {
   this.canvas.setSize(width, height);
+}
+
+FF_Game.prototype.setScreenTheme = function(theme) {
+  this.canvas.backgroundColor = theme.backgroundColor;
+  this.canvas.showSplashMessage(theme.title, 1500);
+  this.currentTheme = theme;
+}
+
+FF_Game.prototype.setLevelScreenTheme = function(level) {
+  this.level = level;
+  this.setScreenTheme(this.levelThemes[this.level % this.levelThemes.length]);
+  for ( var i = 0 ; i < this.shapes.length ; i++ )
+    this.shapes[i].color = this.getShapeColor();
 }
