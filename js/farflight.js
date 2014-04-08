@@ -408,7 +408,7 @@ FF_Game.prototype.init = function() {
     }, false);
 
     canvas.canvas.addEventListener('touchmove', function(e){
-      if ( Date.now() - this.touchStart > 300) {
+      if ( Date.now() - this.touchStart > 100) {
         var touchObj = e.changedTouches[0];
         canvas.setCameraPosition(touchObj.pageX, touchObj.pageY);
       }
@@ -416,7 +416,7 @@ FF_Game.prototype.init = function() {
     }, false);
 
     canvas.canvas.addEventListener('touchend', function(e){
-      if ( Date.now() - this.touchStart <= 300)
+      if ( Date.now() - this.touchStart <= 100)
         game.pressButton();
       e.preventDefault()
     }, false);
