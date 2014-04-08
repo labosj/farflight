@@ -454,11 +454,11 @@ FF_Game.prototype.setScreenTheme = function(theme) {
   this.canvas.showSplashMessage(theme.title, 1500);
   this.canvas.textColor = theme.textColor;
   this.currentTheme = theme;
+  for ( var i = 0 ; i < this.shapes.length ; i++ )
+    this.shapes[i].color = this.getShapeColor();
 }
 
 FF_Game.prototype.setLevelScreenTheme = function(level) {
   this.level = level;
   this.setScreenTheme(this.levelThemes[this.level % this.levelThemes.length]);
-  for ( var i = 0 ; i < this.shapes.length ; i++ )
-    this.shapes[i].color = this.getShapeColor();
 }
