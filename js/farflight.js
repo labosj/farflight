@@ -292,19 +292,22 @@ function FF_Game(canvasId, width, height) {
     return "hsl("+ color +", 100%, 50%)";
   });
   
-  this.levelThemes = [];
-  this.levelThemes[0] = new FF_ScreenTheme("", "#000" , "#FF0", function(distance) {
-    var color  = (distance * 360 / 200000) % 360;
-    return "hsl("+ color +", 100%, 50%)";
-  });
-  this.levelThemes[1] = new FF_ScreenTheme("Forest", "#030" , "#FF0", function() { return "#F80"; });
-  this.levelThemes[2] = new FF_ScreenTheme("Sea", "#002" , "#FF0", function() { return "#55F"; });
-  this.levelThemes[3] = new FF_ScreenTheme("Snow", "#FFF" , "#000", function() { return "#050"; });
-  this.levelThemes[4] = new FF_ScreenTheme("Night", "#003" , "#FF0", function() { return "#FF0"; });
-  this.levelThemes[5] = new FF_ScreenTheme("Rock", "#222" , "#FF0", function() { return "#888"; });
-  this.levelThemes[6] = new FF_ScreenTheme("Volcano", "#500" , "#FF0", function() { return "#FF0"; });
-  this.levelThemes[7] = new FF_ScreenTheme("Sky", "#00F" , "#FF0", function() { return "#FFF"; });
-  this.levelThemes[8] = new FF_ScreenTheme("Hell", "#F00" , "#FF0", function() { return "#000"; });
+  this.levelThemes = [
+    new FF_ScreenTheme("", "#000" , "#FF0", function(distance) {
+      var color  = (distance * 360 / 200000) % 360;
+      return "hsl("+ color +", 100%, 50%)";
+    }),
+    new FF_ScreenTheme("Forest", "#030" , "#FF0", function() { return "#F80"; }),
+    new FF_ScreenTheme("Sea", "#002" , "#FF0", function() { return "#55F"; }),
+    new FF_ScreenTheme("Snow", "#FFF" , "#000", function() { return "#050"; }),
+    new FF_ScreenTheme("Night", "#003" , "#FF0", function() { return "#FF0"; }),
+    new FF_ScreenTheme("Rock", "#222" , "#FF0", function() { return "#888"; }),
+    new FF_ScreenTheme("Matrix", "#000" , "#0F0", function() { return "#080"; }),
+    new FF_ScreenTheme("Volcano", "#500" , "#FF0", function() { return "#FF0"; }),
+    new FF_ScreenTheme("Halloween", "#000" , "#0A0", function() { return "#F50"; }),
+    new FF_ScreenTheme("Sky", "#00F" , "#FF0", function() { return "#FFF"; }),
+    new FF_ScreenTheme("Hell", "#F00" , "#FF0", function() { return "#000"; })
+  ];
 
   this.currentLevel = 0;
 
