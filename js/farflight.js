@@ -415,7 +415,7 @@ FF_Game.prototype.init = function() {
       e.preventDefault()
     }, false);
 
-    canvas.canvas.addEventListener('touchend touchcancel', function(e){
+    canvas.canvas.addEventListener('touchend', function(e){
       if ( Date.now() - this.touchStart <= 300)
         game.pressButton();
       e.preventDefault()
