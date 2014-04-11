@@ -77,7 +77,7 @@ FF_Canvas.prototype.drawGameOverMessage = function(distance, time) {
   this.drawText(words[6], 400, 280);
   this.drawText(words[7], 400, 350);
   this.setContextFont(15);
-  this.drawText(this.replaceText2(words[8], distance / 100 >> 0, time / 100 >> 0), 400, 300);   
+  this.drawText(this.replaceText2(words[8], this.transformDistance(distance), this.transformTime(time)), 400, 300);   
 }
 
 FF_Canvas.prototype.drawInfo = function(distance, time, speed) {
@@ -86,12 +86,12 @@ FF_Canvas.prototype.drawInfo = function(distance, time, speed) {
   this.setContextFont(15);
   this.context.textAlign = 'left';
   this.drawText(this.replaceText1(words[9], speed), 25, 520);
-  this.drawText(this.replaceText1(words[10], time / 100 >> 0), 25, 540);
+  this.drawText(this.replaceText1(words[10], this.transformTime(time)), 25, 540);
 
   this.context.textAlign = 'center';
   this.drawText(words[11], 400, 25);
   this.setContextFont(25);
-  this.drawText(this.replaceText1(words[1], distance / 100 >> 0), 400, 50);
+  this.drawText(this.replaceText1(words[1], this.transformDistance(distance)), 400, 50);
 }
 
 FF_Canvas.prototype.drawLine = function(x1, y1, x2, y2) {
@@ -148,7 +148,7 @@ FF_Canvas.prototype.drawTitleInfo = function(distance) {
   this.setContextFont(15);
   this.drawText(words[0], 400, 25);
   this.setContextFont(25);
-  this.drawText(this.replaceText1(words[1], distance / 30 >> 0), 400 , 50);
+  this.drawText(this.replaceText1(words[1], this.transformDistance(distance)), 400 , 50);
 
   this.setContextFont(60);
   this.drawText(words[2], 400, 200);
@@ -204,6 +204,14 @@ FF_Canvas.prototype.showSplashMessage = function(message, duration) {
 
 FF_Canvas.prototype.transform = function(coord) {
   return this.ratio * coord; 
+}
+
+FF_Canvas.prototype.transformDistance = function(distance) {
+  return distance / 100 << 0;
+}
+
+FF_Canvas.prototype.transformTime = function(time) {
+  return time / 100 << 0;
 }
 
 function FF_Shape() {
