@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Far Flight</title>
+<canvas id="canvas"></canvas>
+<script src="locale/en/words.js"></script>
+<script src="js/farflight.js"></script>
+<script>var game = new FF_Game('canvas', 640, 480);
+//Replace the arguments to test themes.
+//First = background color
+//Second = font color
+//Third = function of shape line color
+game.setScreenTheme(new FF_ScreenTheme("Gold", "#FC3" , "#FF0", function() { return "#C93"; }));</script>

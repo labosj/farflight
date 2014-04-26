@@ -314,7 +314,13 @@ function FF_Game(canvasId, width, height) {
     new FF_ScreenTheme("Volcano", "#500" , "#FF0", function() { return "#FF0"; }),
     new FF_ScreenTheme("Halloween", "#000" , "#0A0", function() { return "#F50"; }),
     new FF_ScreenTheme("Sky", "#00F" , "#FF0", function() { return "#FFF"; }),
-    new FF_ScreenTheme("Hell", "#F00" , "#FF0", function() { return "#000"; })
+    new FF_ScreenTheme("Hell", "#F00" , "#FF0", function() { return "#000"; }),
+	new FF_ScreenTheme("Beach", "#3EE" , "#FF0", function() { return "#F93"; }),
+    new FF_ScreenTheme("Superman", "#00F" , "#FF0", function() { return "#F00"; }),
+    new FF_ScreenTheme("Hulk", "#0A0" , "#0F0", function() { return "#000"; }),
+    new FF_ScreenTheme("Spiderman", "#F00" , "#000", function() { return "#00F"; }),
+    new FF_ScreenTheme("Hulk", "#0A0" , "#0F0", function() { return "#000"; }),
+    new FF_ScreenTheme("Honey", "#FC3" , "#FF0", function() { return "#C93"; })
   ];
 
   this.currentLevel = 0;
