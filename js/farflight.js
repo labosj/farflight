@@ -58,6 +58,7 @@ function FF_Canvas(canvasId, width, height) {
   this.offsetX;
   this.offsetY;
   this.splashMessage = new FF_SplashMessage();
+  this.achievementMessage = new FF_SplashMessage();
   this.textColor = "#FF0";
   
   this.setSize(width, height);
@@ -137,6 +138,18 @@ FF_Canvas.prototype.drawSplashMessage = function(time) {
   this.splashMessage.advance(time);
 }
 
+FF_Canvas.prototype.drawAchievementMessage = function(time) {
+  if ( this.achievementMessage.time <= 0 ) return; 
+  this.context.globalAlpha = this.achievementMessage.getAlpha();
+  this.context.fillStyle = this.textColor;
+  this.context.textAlign = 'center';
+  this.setContextFont(30);
+  this.drawText("Achievement unlocked", 400, 160);
+  this.setContextFont(25);
+  this.drawText(this.achievementMessage.text, 400, 190);
+  this.achievementMessage.advance(time);
+}
+
 FF_Canvas.prototype.drawText = function(text, posX, posY) {
   this.context.fillText(text, this.transform(posX), this.transform(posY));
 }
@@ -200,6 +213,10 @@ FF_Canvas.prototype.setSize = function(width, height) {
 
 FF_Canvas.prototype.showSplashMessage = function(message, duration) {
   this.splashMessage.setMessage(message, duration);
+}
+
+FF_Canvas.prototype.showAchievementMessage = function(message, duration) {
+  this.achievementMessage.setMessage(message, duration);
 }
 
 FF_Canvas.prototype.transform = function(coord) {
@@ -274,6 +291,23 @@ function FF_ScreenTheme(title, backgroundColor, textColor, shapeColor) {
   this.textColor = textColor;
 }
 
+function FF_Achievement(id, name, description, isAchievedFunction) {
+  this.id = id;
+  this.name = name;
+  this.description = description;
+  this.unlocked = (window.localStorage.getItem("achievement_" + this.id) == "true");
+  this.isAchievedFunction = isAchievedFunction;
+}
+
+FF_Achievement.prototype.isAchieved = function(game) {
+  if ( !this.unlocked && this.isAchievedFunction(game.currentDistance, game.currentTime, game.currentSpeed) ) {
+    this.unlocked = true;
+	window.localStorage.setItem("achievement_" + this.id, "true");
+    return true;
+  }
+  return false;
+}
+
 function FF_Game(canvasId, width, height) {
   this.bestDistance = window.localStorage.getItem("bestScore") || 0;
   this.bestDistanceBeated = false;
@@ -321,6 +355,12 @@ function FF_Game(canvasId, width, height) {
     new FF_ScreenTheme("Spiderman", "#F00" , "#000", function() { return "#00F"; }),
     new FF_ScreenTheme("Hulk", "#0A0" , "#0F0", function() { return "#000"; }),
     new FF_ScreenTheme("Honey", "#FC3" , "#FF0", function() { return "#C93"; })
+  ];
+  
+  this.achievements = [
+    new FF_Achievement(0, "First flight", "Fly 1000 meters", function(currentDistance, currentTime, currentSpeed) { return currentDistance >= 100000; }),
+	new FF_Achievement(1, "Forest", "Enter the Forest level for first time", function(currentDistance, currentTime, currentSpeed) { return currentDistance >= 200000; }),
+    new FF_Achievement(2, "New born", "Survive for 10 seconds", function(currentDistance, currentTime, currentSpeed) { return currentTime >= 1000; })
   ];
 
   this.currentLevel = 0;
@@ -370,11 +410,19 @@ FF_Game.prototype.advance = function() {
       this.canvas.showSplashMessage(words[16], 1500);
       this.bestDistanceBeated = true;
     }
+	this.checkAchievements();
     if ( (this.level + 1) * 200000 < this.currentDistance )
       this.setLevelScreenTheme( this.level + 1);
-
+	
     this.currentDistance += currentSpeed;
     this.currentTime += timeRatio;
+  }
+}
+
+FF_Game.prototype.checkAchievements = function() {
+  for ( var i = 0 ; i < this.achievements.length ; i++ ) {
+	if ( this.achievements[i].isAchieved(this) )
+	  this.canvas.showAchievementMessage(this.achievements[i].name, 3500);
   }
 }
 
@@ -387,6 +435,7 @@ FF_Game.prototype.draw = function() {
     if ( this.gameState == 1 ) {
       this.canvas.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
       this.canvas.drawSplashMessage(this.drawTimer.delta);
+	  this.canvas.drawAchievementMessage(this.drawTimer.delta);
     } else if ( this.gameState == 2 ) {
       this.canvas.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
       this.canvas.drawGameOverMessage(this.currentDistance, this.currentTime, this.currentSpeed);
