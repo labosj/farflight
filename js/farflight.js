@@ -308,6 +308,28 @@ FF_Achievement.prototype.isAchieved = function(values) {
   return false;
 }
 
+FF_Achievement.getAchievements = function() {
+ return [
+    new FF_Achievement(0, "First flight", "Fly 1000 meters", function(values) { return values.currentDistance >= 100000; }),
+	new FF_Achievement(300, "Give it a shot!", "Play for 1 minute", function(values) { return values.totalTime >= 6000; }),
+	new FF_Achievement(301, "Give it 2 shot!", "Play for 5 minutes", function(values) { return values.totalTime >= 30000; }),
+	new FF_Achievement(302, "Give it... Just kidding", "Play for 15 minutes", function(values) { return values.totalTime >= 90000; }),
+	new FF_Achievement(303, "Half Flight", "Play for 30 minutes", function(values) { return values.totalTime >= 180000; }),
+	new FF_Achievement(304, "O'Clock!", "Play for 1 hour", function(values) { return values.totalTime >= 360000; }),
+	new FF_Achievement(305, "Movie on its finest", "Play for 2 hours", function(values) { return values.totalTime >= 720000; }),
+	new FF_Achievement(306, "Queues please...", "Play for 4 hours", function(values) { return values.totalTime >= 1440000; }),
+	new FF_Achievement(307, "ProGamer!", "Play for 12 hours", function(values) { return values.totalTime >= 4320000; }),
+	new FF_Achievement(308, "All-Fay Long", "Play for 24 hours", function(values) { return values.totalTime >= 8640000; }),
+	new FF_Achievement(400, "Where is the Flight 815?", "Die 1 time", function(values) { return values.totalDeaths >= 1; }),
+	new FF_Achievement(401, "Area 51", "Die 10 time", function(values) { return values.totalDeaths >= 10; }),
+	new FF_Achievement(402, "Aliens!", "Die 50 time", function(values) { return values.totalDeaths >= 50; }),
+	new FF_Achievement(403, "More than pokemon, oh wait...", "Die 151 time", function(values) { return values.totalDeaths >= 151; }),
+	new FF_Achievement(404, "Vermudas Triangle, Stop", "Die 500 time", function(values) { return values.totalDeaths >= 500; }),
+	new FF_Achievement(405, "Damn, Mothership came", "Die 1000 time", function(values) { return values.totalDeaths >= 1000; }),
+	new FF_Achievement(406, "It's Over 9000!", "Die 9000 time", function(values) { return values.totalDeaths >= 9000; })
+  ];
+};
+
 function FF_GameValues() {
   this.bestDistance = parseInt(window.localStorage.getItem("ff-values-best-score")) || 0;
   this.currentDistance = 0;
@@ -342,25 +364,7 @@ function FF_Game(canvasId, width, height) {
     return "hsl("+ color +", 100%, 50%)";
   });
   
-  this.achievements = [
-    new FF_Achievement(0, "First flight", "Fly 1000 meters", function(values) { return values.currentDistance >= 100000; }),
-	new FF_Achievement(300, "Give it a shot!", "Play for 1 minute", function(values) { return values.totalTime >= 6000; }),
-	new FF_Achievement(301, "Give it 2 shot!", "Play for 5 minutes", function(values) { return values.totalTime >= 30000; }),
-	new FF_Achievement(302, "Give it... Just kidding", "Play for 15 minutes", function(values) { return values.totalTime >= 90000; }),
-	new FF_Achievement(303, "Half Flight", "Play for 30 minutes", function(values) { return values.totalTime >= 180000; }),
-	new FF_Achievement(304, "O'Clock!", "Play for 1 hour", function(values) { return values.totalTime >= 360000; }),
-	new FF_Achievement(305, "Movie on its finest", "Play for 2 hours", function(values) { return values.totalTime >= 720000; }),
-	new FF_Achievement(306, "Queues please...", "Play for 4 hours", function(values) { return values.totalTime >= 1440000; }),
-	new FF_Achievement(307, "ProGamer!", "Play for 12 hours", function(values) { return values.totalTime >= 4320000; }),
-	new FF_Achievement(308, "All-Fay Long", "Play for 24 hours", function(values) { return values.totalTime >= 8640000; }),
-	new FF_Achievement(400, "Where is the Flight 815?", "Die 1 time", function(values) { return values.totalDeaths >= 1; }),
-	new FF_Achievement(401, "Area 51", "Die 10 time", function(values) { return values.totalDeaths >= 10; }),
-	new FF_Achievement(402, "Aliens!", "Die 50 time", function(values) { return values.totalDeaths >= 50; }),
-	new FF_Achievement(403, "More than pokemon, oh wait...", "Die 151 time", function(values) { return values.totalDeaths >= 151; }),
-	new FF_Achievement(404, "Vermudas Triangle, Stop", "Die 500 time", function(values) { return values.totalDeaths >= 500; }),
-	new FF_Achievement(405, "Damn, Mothership came", "Die 1000 time", function(values) { return values.totalDeaths >= 1000; }),
-	new FF_Achievement(406, "It's Over 9000!", "Die 9000 time", function(values) { return values.totalDeaths >= 9000; })
-  ];
+  this.achievements = FF_Achievement.getAchievements();
   
   this.levelThemes = [
     new FF_ScreenTheme("", "#000" , "#FF0", function(distance) {
