@@ -295,26 +295,34 @@ function FF_Achievement(id, name, description, isAchievedFunction) {
   this.id = id;
   this.name = name;
   this.description = description;
-  this.unlocked = (window.localStorage.getItem("achievement_" + this.id) == "true");
+  this.unlocked = (window.localStorage.getItem("ff-ach-" + this.id) == "true");
   this.isAchievedFunction = isAchievedFunction;
 }
 
-FF_Achievement.prototype.isAchieved = function(game) {
-  if ( !this.unlocked && this.isAchievedFunction(game.currentDistance, game.currentTime, game.currentSpeed) ) {
+FF_Achievement.prototype.isAchieved = function(values) {
+  if ( !this.unlocked && this.isAchievedFunction(values) ) {
     this.unlocked = true;
-	window.localStorage.setItem("achievement_" + this.id, "true");
+	window.localStorage.setItem("ff-ach-" + this.id, "true");
     return true;
   }
   return false;
 }
 
-function FF_Game(canvasId, width, height) {
-  this.bestDistance = window.localStorage.getItem("bestScore") || 0;
-  this.bestDistanceBeated = false;
-
+function FF_GameValues() {
+  this.bestDistance = parseInt(window.localStorage.getItem("ff-values-best-score")) || 0;
   this.currentDistance = 0;
   this.currentTime = 0;
   this.currentSpeed = 10.0;
+  this.currentLevel = 0;
+  this.totalTime = parseFloat(window.localStorage.getItem("ff-values-total-time")) || 0;
+  this.totalDeaths = parseInt(window.localStorage.getItem("ff-values-total-deaths")) || 0;
+}
+
+function FF_Game(canvasId, width, height) {
+  this.values = new FF_GameValues();
+
+  this.bestDistanceBeated = false;
+
   this.gameState = 0; //0: TITLE, 1:GAME, 2:GAMEOVER
   this.shapes = [];
 
@@ -333,6 +341,26 @@ function FF_Game(canvasId, width, height) {
     var color =  Math.floor((Math.random() * 360));
     return "hsl("+ color +", 100%, 50%)";
   });
+  
+  this.achievements = [
+    new FF_Achievement(0, "First flight", "Fly 1000 meters", function(values) { return values.currentDistance >= 100000; }),
+	new FF_Achievement(300, "Give it a shot!", "Play for 1 minute", function(values) { return values.totalTime >= 6000; }),
+	new FF_Achievement(301, "Give it 2 shot!", "Play for 5 minutes", function(values) { return values.totalTime >= 30000; }),
+	new FF_Achievement(302, "Give it... Just kidding", "Play for 15 minutes", function(values) { return values.totalTime >= 90000; }),
+	new FF_Achievement(303, "Half Flight", "Play for 30 minutes", function(values) { return values.totalTime >= 180000; }),
+	new FF_Achievement(304, "O'Clock!", "Play for 1 hour", function(values) { return values.totalTime >= 360000; }),
+	new FF_Achievement(305, "Movie on its finest", "Play for 2 hours", function(values) { return values.totalTime >= 720000; }),
+	new FF_Achievement(306, "Queues please...", "Play for 4 hours", function(values) { return values.totalTime >= 1440000; }),
+	new FF_Achievement(307, "ProGamer!", "Play for 12 hours", function(values) { return values.totalTime >= 4320000; }),
+	new FF_Achievement(308, "All-Fay Long", "Play for 24 hours", function(values) { return values.totalTime >= 8640000; }),
+	new FF_Achievement(400, "Where is the Flight 815?", "Die 1 time", function(values) { return values.totalDeaths >= 1; }),
+	new FF_Achievement(401, "Area 51", "Die 10 time", function(values) { return values.totalDeaths >= 10; }),
+	new FF_Achievement(402, "Aliens!", "Die 50 time", function(values) { return values.totalDeaths >= 50; }),
+	new FF_Achievement(403, "More than pokemon, oh wait...", "Die 151 time", function(values) { return values.totalDeaths >= 151; }),
+	new FF_Achievement(404, "Vermudas Triangle, Stop", "Die 500 time", function(values) { return values.totalDeaths >= 500; }),
+	new FF_Achievement(405, "Damn, Mothership came", "Die 1000 time", function(values) { return values.totalDeaths >= 1000; }),
+	new FF_Achievement(406, "It's Over 9000!", "Die 9000 time", function(values) { return values.totalDeaths >= 9000; })
+  ];
   
   this.levelThemes = [
     new FF_ScreenTheme("", "#000" , "#FF0", function(distance) {
@@ -353,14 +381,8 @@ function FF_Game(canvasId, width, height) {
     new FF_ScreenTheme("Superman", "#00F" , "#FF0", function() { return "#F00"; }),
     new FF_ScreenTheme("Hulk", "#0A0" , "#0F0", function() { return "#000"; }),
     new FF_ScreenTheme("Spiderman", "#F00" , "#000", function() { return "#00F"; }),
-    new FF_ScreenTheme("Hulk", "#0A0" , "#0F0", function() { return "#000"; }),
-    new FF_ScreenTheme("Honey", "#FC3" , "#FF0", function() { return "#C93"; })
-  ];
-  
-  this.achievements = [
-    new FF_Achievement(0, "First flight", "Fly 1000 meters", function(currentDistance, currentTime, currentSpeed) { return currentDistance >= 100000; }),
-	new FF_Achievement(1, "Forest", "Enter the Forest level for first time", function(currentDistance, currentTime, currentSpeed) { return currentDistance >= 200000; }),
-    new FF_Achievement(2, "New born", "Survive for 10 seconds", function(currentDistance, currentTime, currentSpeed) { return currentTime >= 1000; })
+    new FF_ScreenTheme("Honey", "#FC3" , "#FF0", function() { return "#C93"; }),
+	new FF_ScreenTheme("Transylvania", "#F00" , "#000", function() { return "#00F"; })
   ];
 
   this.currentLevel = 0;
@@ -373,14 +395,14 @@ function FF_Game(canvasId, width, height) {
 }
 
 FF_Game.prototype.accel = function() {
-  this.currentSpeed += 10.0;
+  this.values.currentSpeed += 10.0;
   this.canvas.showSplashMessage(words[12], 500);
 }
 
 FF_Game.prototype.advance = function() {
   this.actTimer.advance();
   var timeRatio = (this.actTimer.delta / 10.0);
-  var currentSpeed = this.currentSpeed * timeRatio;
+  var currentSpeed = this.values.currentSpeed * timeRatio;
   var shape;
   for ( var i = 0 ; i < this.shapes.length ; i++ ) {
     shape = this.shapes[i];
@@ -393,35 +415,36 @@ FF_Game.prototype.advance = function() {
   }
   
   if ( this.gameState == 1 ) {
-    if ( this.currentSpeed <= 10.0 ) {
-		if ( this.tutorialCounter == 2 && this.currentTime > 700.0 ) {
+    if ( this.values.currentSpeed <= 10.0 ) {
+		if ( this.tutorialCounter == 2 && this.values.currentTime > 700.0 ) {
 		  this.canvas.showSplashMessage(words[13], 1500);
 		  this.tutorialCounter++;
-		} else if ( this.tutorialCounter == 1 && this.currentTime > 400.0 ) {
+		} else if ( this.tutorialCounter == 1 && this.values.currentTime > 400.0 ) {
 		  this.canvas.showSplashMessage(words[14], 1500);
 		  this.tutorialCounter++;
-		} else if ( this.tutorialCounter == 0 && this.currentTime > 100.0 ) {
+		} else if ( this.tutorialCounter == 0 && this.values.currentTime > 100.0 ) {
 		  this.canvas.showSplashMessage(words[15], 1500);
 		  this.tutorialCounter++;
 		}
 	}
-    if ( this.currentSpeed < 70.0 && this.currentTime / 1000.0 > this.currentSpeed ) this.accel();
-    if ( this.bestDistance > 0.0 && !this.bestDistanceBeated && this.currentDistance > this.bestDistance) {
+    if ( this.values.currentSpeed < 70.0 && this.values.currentTime / 100.0 > this.values.currentSpeed * 30.0 ) this.accel();
+    if ( this.values.bestDistance > 0.0 && !this.bestDistanceBeated && this.values.currentDistance > this.values.bestDistance) {
       this.canvas.showSplashMessage(words[16], 1500);
       this.bestDistanceBeated = true;
     }
 	this.checkAchievements();
-    if ( (this.level + 1) * 200000 < this.currentDistance )
-      this.setLevelScreenTheme( this.level + 1);
+    if ( (this.values.currentLevel + 1) * 200000 < this.values.currentDistance )
+      this.setLevelScreenTheme( this.values.currentLevel + 1);
 	
-    this.currentDistance += currentSpeed;
-    this.currentTime += timeRatio;
+    this.values.currentDistance += currentSpeed;
+    this.values.currentTime += timeRatio;
+	this.values.totalTime += timeRatio;
   }
 }
 
 FF_Game.prototype.checkAchievements = function() {
   for ( var i = 0 ; i < this.achievements.length ; i++ ) {
-	if ( this.achievements[i].isAchieved(this) )
+	if ( this.achievements[i].isAchieved(this.values) )
 	  this.canvas.showAchievementMessage(this.achievements[i].name, 3500);
   }
 }
@@ -433,20 +456,20 @@ FF_Game.prototype.draw = function() {
       this.canvas.drawShape(this.shapes[i]);
     
     if ( this.gameState == 1 ) {
-      this.canvas.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
+      this.canvas.drawInfo(this.values.currentDistance, this.values.currentTime, this.values.currentSpeed);
       this.canvas.drawSplashMessage(this.drawTimer.delta);
-	  this.canvas.drawAchievementMessage(this.drawTimer.delta);
     } else if ( this.gameState == 2 ) {
-      this.canvas.drawInfo(this.currentDistance, this.currentTime, this.currentSpeed);
-      this.canvas.drawGameOverMessage(this.currentDistance, this.currentTime, this.currentSpeed);
-    } else {
-      this.canvas.drawTitleInfo(this.bestDistance);
-    }        
+      this.canvas.drawInfo(this.values.currentDistance, this.values.currentTime, this.values.currentSpeed);
+      this.canvas.drawGameOverMessage(this.values.currentDistance, this.values.currentTime, this.values.currentSpeed);
+	} else {
+      this.canvas.drawTitleInfo(this.values.bestDistance);
+    }
+    this.canvas.drawAchievementMessage(this.drawTimer.delta);	
   }
 }
 
 FF_Game.prototype.getShapeColor = function() {
-  return this.currentTheme.shapeColor(this.currentDistance);
+  return this.currentTheme.shapeColor(this.values.currentDistance);
 }
 
 FF_Game.prototype.init = function() {
@@ -485,7 +508,6 @@ FF_Game.prototype.init = function() {
     }, false);
   }
 
-
   setInterval( function() { game.advance(); }, 10);
 
   function draw() {
@@ -515,25 +537,29 @@ FF_Game.prototype.pressButton = function() {
 FF_Game.prototype.setGameOver = function() {
   this.gameState = 2;
   this.bestDistanceBeated = false;
-
-  if ( this.currentDistance > this.bestDistance ) {
-    this.bestDistance = this.currentDistance;
-    window.localStorage.setItem("bestScore", this.bestDistance);
+  window.localStorage.setItem("ff-values-total-time", this.values.totalTime);
+  this.values.totalDeaths++;
+  window.localStorage.setItem("ff-values-total-deaths", this.values.totalDeaths);
+  if ( this.values.currentDistance > this.values.bestDistance ) {
+    this.values.bestDistance = this.values.currentDistance;
+    window.localStorage.setItem("ff-values-best-score", this.values.bestDistance);
   }
+  this.checkAchievements();
   this.setScreenTheme(this.gameOverTheme);
 }
 
 FF_Game.prototype.setGameStart = function() {
   this.gameState = 1;
-  this.currentDistance = 0;
-  this.currentTime = 0;
-  this.currentSpeed = 10.0;
+  this.values.currentDistance = 0;
+  this.values.currentTime = 0;
+  this.values.currentSpeed = 10.0;
+  this.tutorialCounter = 0;
   this.setLevelScreenTheme(0);
 }
 
 FF_Game.prototype.setGameTitle = function() {
   this.gameState = 0;
-  this.currentSpeed = 10.0;  
+  this.values.currentSpeed = 10.0;  
   this.setScreenTheme(this.titleTheme);
 }
 
@@ -551,6 +577,6 @@ FF_Game.prototype.setScreenTheme = function(theme) {
 }
 
 FF_Game.prototype.setLevelScreenTheme = function(level) {
-  this.level = level;
-  this.setScreenTheme(this.levelThemes[this.level % this.levelThemes.length]);
+  this.values.currentLevel = level;
+  this.setScreenTheme(this.levelThemes[level % this.levelThemes.length]);
 }
