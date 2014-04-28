@@ -78,7 +78,7 @@ FF_Canvas.prototype.drawGameOverMessage = function(distance, time) {
   this.drawText(words[6], 400, 280);
   this.drawText(words[7], 400, 350);
   this.setContextFont(15);
-  this.drawText(this.replaceText2(words[8], this.transformDistance(distance), this.transformTime(time)), 400, 300);   
+  this.drawText(this.replaceText2(words[8], FF_Canvas.transformDistance(distance), FF_Canvas.transformTime(time)), 400, 300);   
 }
 
 FF_Canvas.prototype.drawInfo = function(distance, time, speed) {
@@ -87,12 +87,12 @@ FF_Canvas.prototype.drawInfo = function(distance, time, speed) {
   this.setContextFont(15);
   this.context.textAlign = 'left';
   this.drawText(this.replaceText1(words[9], speed), 25, 520);
-  this.drawText(this.replaceText1(words[10], this.transformTime(time)), 25, 540);
+  this.drawText(this.replaceText1(words[10], FF_Canvas.transformTime(time)), 25, 540);
 
   this.context.textAlign = 'center';
   this.drawText(words[11], 400, 25);
   this.setContextFont(25);
-  this.drawText(this.replaceText1(words[1], this.transformDistance(distance)), 400, 50);
+  this.drawText(this.replaceText1(words[1], FF_Canvas.transformDistance(distance)), 400, 50);
 }
 
 FF_Canvas.prototype.drawLine = function(x1, y1, x2, y2) {
@@ -161,7 +161,7 @@ FF_Canvas.prototype.drawTitleInfo = function(distance) {
   this.setContextFont(15);
   this.drawText(words[0], 400, 25);
   this.setContextFont(25);
-  this.drawText(this.replaceText1(words[1], this.transformDistance(distance)), 400 , 50);
+  this.drawText(this.replaceText1(words[1], FF_Canvas.transformDistance(distance)), 400 , 50);
 
   this.setContextFont(60);
   this.drawText(words[2], 400, 200);
@@ -223,11 +223,11 @@ FF_Canvas.prototype.transform = function(coord) {
   return this.ratio * coord; 
 }
 
-FF_Canvas.prototype.transformDistance = function(distance) {
+FF_Canvas.transformDistance = function(distance) {
   return distance / 100 << 0;
 }
 
-FF_Canvas.prototype.transformTime = function(time) {
+FF_Canvas.transformTime = function(time) {
   return time / 100 << 0;
 }
 
@@ -320,13 +320,13 @@ FF_Achievement.getAchievements = function() {
 	new FF_Achievement(306, "Queues please...", "Play for 4 hours", function(values) { return values.totalTime >= 1440000; }),
 	new FF_Achievement(307, "ProGamer!", "Play for 12 hours", function(values) { return values.totalTime >= 4320000; }),
 	new FF_Achievement(308, "All-Fay Long", "Play for 24 hours", function(values) { return values.totalTime >= 8640000; }),
-	new FF_Achievement(400, "Where is the Flight 815?", "Die 1 time", function(values) { return values.totalDeaths >= 1; }),
-	new FF_Achievement(401, "Area 51", "Die 10 time", function(values) { return values.totalDeaths >= 10; }),
-	new FF_Achievement(402, "Aliens!", "Die 50 time", function(values) { return values.totalDeaths >= 50; }),
-	new FF_Achievement(403, "More than pokemon, oh wait...", "Die 151 time", function(values) { return values.totalDeaths >= 151; }),
-	new FF_Achievement(404, "Vermudas Triangle, Stop", "Die 500 time", function(values) { return values.totalDeaths >= 500; }),
-	new FF_Achievement(405, "Damn, Mothership came", "Die 1000 time", function(values) { return values.totalDeaths >= 1000; }),
-	new FF_Achievement(406, "It's Over 9000!", "Die 9000 time", function(values) { return values.totalDeaths >= 9000; })
+	new FF_Achievement(400, "Where is the Flight 815?", "Crash 1 time", function(values) { return values.totalDeaths >= 1; }),
+	new FF_Achievement(401, "Area 51", "Crash 10 times", function(values) { return values.totalDeaths >= 10; }),
+	new FF_Achievement(402, "Aliens!", "Crash 50 times", function(values) { return values.totalDeaths >= 50; }),
+	new FF_Achievement(403, "More than pokemon, oh wait...", "Crash 151 times", function(values) { return values.totalDeaths >= 151; }),
+	new FF_Achievement(404, "Vermudas Triangle, Stop", "Crash 500 times", function(values) { return values.totalDeaths >= 500; }),
+	new FF_Achievement(405, "Damn, Mothership came", "Crash 1000 times", function(values) { return values.totalDeaths >= 1000; }),
+	new FF_Achievement(406, "It's Over 9000!", "Crash 9000 times", function(values) { return values.totalDeaths >= 9000; })
   ];
 };
 
@@ -438,7 +438,7 @@ FF_Game.prototype.advance = function() {
     }
 	this.checkAchievements();
     if ( (this.values.currentLevel + 1) * 200000 < this.values.currentDistance )
-      this.setLevelScreenTheme( this.values.currentLevel + 1);
+      this.setLevelScreenTheme(Math.floor((Math.random()*this.levelThemes.length)));
 	
     this.values.currentDistance += currentSpeed;
     this.values.currentTime += timeRatio;
@@ -558,6 +558,7 @@ FF_Game.prototype.setGameStart = function() {
   this.values.currentTime = 0;
   this.values.currentSpeed = 10.0;
   this.tutorialCounter = 0;
+  this.values.currentLevel = -1;
   this.setLevelScreenTheme(0);
 }
 
@@ -581,6 +582,7 @@ FF_Game.prototype.setScreenTheme = function(theme) {
 }
 
 FF_Game.prototype.setLevelScreenTheme = function(level) {
+  if ( this.values.currentLevel == level ) level++;
   this.values.currentLevel = level;
   this.setScreenTheme(this.levelThemes[level % this.levelThemes.length]);
 }
