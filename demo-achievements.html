@@ -4,15 +4,9 @@
 <pre id="text"></pre>
 <script src="locale/en/words.js"></script>
 <script src="js/farflight.js"></script>
+<script src="js/ff_achievement.js"></script>
 <script>
-  var values = new FF_GameValues();
-  var achievements = FF_Achievement.getAchievements();
-  var string = "Achievements\n";
-  string += "Best Distance: " + values.bestDistance + "\n";
-  string += "Total time: " + values.totalTime / 100 + " seconds \n";
-  string += "Total deaths: " + values.totalDeaths + "\n\n";
-  var totalAchievements = 0;
-  var unlockedAchievements = 0;
+function printAchievements(achievements) {
   for ( var i = 0 ; i < achievements.length ; i++ ) {
     string += "id :" + achievements[i].id + "\n";
 	string += "name :" + achievements[i].name + "\n";
@@ -21,6 +15,34 @@
 	totalAchievements++;
 	unlockedAchievements += achievements[i].unlocked;
   }
+  string +="====================\n\n"; 
+}
+
+
+  var values = new FF_GameValues();
+  var currentDistanceAchievements = FF_Achievement.getCurrentDistanceAchievements();
+  var currentTimeAchievements = FF_Achievement.getCurrentTimeAchievements();
+  var totalDistanceAchievements = FF_Achievement.getTotalDistanceAchievements();
+  var totalTimeAchievements = FF_Achievement.getTotalTimeAchievements();
+  var gameOverAchievements = FF_Achievement.getGameOverAchievements();
+  var calmAchievements = FF_Achievement.getCalmAchievements();
+  var speedStartAchievements = FF_Achievement.getSpeedStartAchievements();
+  var socialAchievements = FF_Achievement.getSocialAchievements();
+  var string = "Achievements\n";
+  string += "Best Distance: " + values.bestDistance + "m \n";
+  string += "Total distance: " + values.totalDistance + " m \n";
+  string += "Total time: " + values.totalTime / 100 + " seconds \n";
+  string += "Total deaths: " + values.totalDeaths + "\n\n";
+  var totalAchievements = 0;
+  var unlockedAchievements = 0;
+  printAchievements(currentDistanceAchievements);
+  printAchievements(currentTimeAchievements);
+  printAchievements(totalDistanceAchievements);
+  printAchievements(totalTimeAchievements);
+  printAchievements(gameOverAchievements);
+  printAchievements(calmAchievements);
+  printAchievements(speedStartAchievements);
+  printAchievements(socialAchievements);
   string += unlockedAchievements + " achievements of " + totalAchievements + "\n\n";
   document.getElementById("text").innerHTML = string;
 
