@@ -473,6 +473,15 @@ FF_Game.prototype.init = function() {
 
   setInterval( function() { game.advance(); }, 10);
 
+
+  var requestAnimationFrame = window.requestAnimationFrame || 
+                              window.webkitRequestAnimationFrame ||
+                              window.mozRequestAnimationFrame ||
+                              window.oRequestAnimationFrame ||
+                              window.msRequestAnimationFrame ||
+                              function (f) { window.setTimeout(function () { f(Date.now()); }, 1000/60); };
+
+
   function draw() {
     requestAnimationFrame(draw);
     game.draw();
