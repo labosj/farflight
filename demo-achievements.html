@@ -2,10 +2,24 @@
 <meta charset="utf-8">
 <title>Far Flight Achievements</title>
 <pre id="text"></pre>
+<button onclick="javascript:reset()">Reset</button>
 <script src="locale/en/words.js"></script>
 <script src="js/farflight.js"></script>
 <script src="js/ff_achievement.js"></script>
 <script>
+function reset() {
+  FF_Achievement.reset(currentDistanceAchievements);
+  FF_Achievement.reset(currentTimeAchievements);
+  FF_Achievement.reset(totalDistanceAchievements);
+  FF_Achievement.reset(totalTimeAchievements);
+  FF_Achievement.reset(speedStartAchievements);
+  FF_Achievement.reset(gameOverAchievements);
+  FF_Achievement.reset(calmAchievements);
+  FF_Achievement.reset(socialAchievements);
+  this.values.reset();
+  location.reload();
+}
+
 function printAchievements(achievements) {
   for ( var i = 0 ; i < achievements.length ; i++ ) {
     string += "id :" + achievements[i].id + "\n";

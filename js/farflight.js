@@ -282,6 +282,17 @@ function FF_GameValues() {
   this.totalDeaths = parseInt(window.localStorage.getItem("ff-values-total-deaths")) || 0;
 }
 
+FF_GameValues.prototype.reset = function() {
+  this.bestDistance = 0;
+  this.totalDistance = 0;
+  this.totalTime = 0;
+  this.totalDeaths = 0;
+  window.localStorage.setItem("ff-values-best-score", 0);
+  window.localStorage.setItem("ff-values-total-distance", 0);
+  window.localStorage.setItem("ff-values-total-time", 0);
+  window.localStorage.setItem("ff-values-total-deaths", 0);
+}
+
 function FF_Game(canvasId, width, height) {
   this.values = new FF_GameValues();
 
@@ -329,12 +340,12 @@ function FF_Game(canvasId, width, height) {
     new FF_ScreenTheme("Halloween", "#000" , "#0A0", function() { return "#F50"; }),
     new FF_ScreenTheme("Sky", "#00F" , "#FF0", function() { return "#FFF"; }),
     new FF_ScreenTheme("Hell", "#F00" , "#FF0", function() { return "#000"; }),
-	new FF_ScreenTheme("Beach", "#3EE" , "#FF0", function() { return "#F93"; }),
+	  new FF_ScreenTheme("Beach", "#3EE" , "#FF0", function() { return "#F93"; }),
     new FF_ScreenTheme("Superman", "#00F" , "#FF0", function() { return "#F00"; }),
     new FF_ScreenTheme("Hulk", "#0A0" , "#0F0", function() { return "#000"; }),
     new FF_ScreenTheme("Spiderman", "#F00" , "#000", function() { return "#00F"; }),
     new FF_ScreenTheme("Honey", "#FC3" , "#FF0", function() { return "#C93"; }),
-	new FF_ScreenTheme("Transylvania", "#F00" , "#000", function() { return "#00F"; })
+	  new FF_ScreenTheme("Transylvania", "#F00" , "#000", function() { return "#00F"; })
   ];
 
   this.levelCounter = 0;
@@ -504,6 +515,17 @@ FF_Game.prototype.pressButton = function() {
   if      ( this.gameState == 1 ) this.accel();
   else if ( this.gameState == 2 ) this.setGameTitle();
   else                            this.setGameStart();
+}
+
+FF_Game.prototype.resetStats = function() {
+  FF_Achievement.reset(this.currentDistanceAchievements);
+  FF_Achievement.reset(this.currentTimeAchievements);
+  FF_Achievement.reset(this.totalDistanceAchievements);
+  FF_Achievement.reset(this.totalTimeAchievements);
+  FF_Achievement.reset(this.speedStartAchievements);
+  FF_Achievement.reset(this.gameOverAchievements);
+  FF_Achievement.reset(this.calmAchievements);
+  this.values.reset();
 }
 
 FF_Game.prototype.setGameOver = function() {
