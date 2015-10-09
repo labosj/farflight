@@ -1,6 +1,11 @@
 #Far Flight
 
 Fly as far as you can without crashing. You can play it [here](http://edwrodrig.github.io/farflight/).
+Also and android version is available on Goole Play
+<a href="https://play.google.com/store/apps/details?id=com.starjack.farflight">
+  <img alt="Android app on Google Play"
+       src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
+</a>
 
 ##Description
 **Far Flight** is a simple serverless *javascript* game that simulates 3d using *canvas* 2d context primitives. It's the final stage of several graphical demos originally programmed in *C++* using *Allegro* and then ported to *javascript*. Some of this demos are published in the following links:
