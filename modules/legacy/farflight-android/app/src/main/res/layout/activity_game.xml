@@ -1,0 +1,258 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+
+    android:layout_height="match_parent" android:background="#0099cc" tools:context=".GameActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <view
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.starjack.farflight.GameView"
+        android:id="@+id/fullscreen_content" />
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:layout_margin="10dp">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/title_controls_view"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="FAR FLIGHT"
+                android:id="@+id/farflight_label"
+                android:layout_marginTop="80dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="by StarJack"
+                android:id="@+id/starjack_label"
+                android:layout_below="@+id/farflight_label"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Max distance: x"
+                android:id="@+id/max_distance_text"
+                android:layout_below="@+id/starjack_label"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="music by Mordi"
+                android:textColor="#FFFF00"
+                android:id="@+id/music_mordi"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
+
+            <Button
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:id="@+id/startButton"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/gameover_controls_view"
+            android:visibility="invisible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="GAME OVER"
+                android:id="@+id/gameover_label"
+                android:layout_marginTop="80dp"
+                android:textSize="35dp"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="You have crashed"
+                android:id="@+id/gameover_crash_label"
+                android:layout_below="@+id/gameover_label"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="You run X in S s"
+                android:id="@+id/gameover_resume_text"
+                android:layout_below="@+id/gameover_crash_label"
+                android:layout_centerHorizontal="true" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/adView"
+                android:layout_marginBottom="10dp"
+                android:layout_centerHorizontal="true">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Retry"
+                    android:id="@+id/retryButton"
+                    android:layout_alignBaseline="@+id/backButton"
+                    android:layout_alignBottom="@+id/backButton"
+                    android:layout_toLeftOf="@+id/gameover_label"
+                    android:layout_toStartOf="@+id/gameover_label"
+                    android:layout_marginRight="67dp"
+                    android:layout_marginEnd="67dp"
+                    style="@style/Widget.AppCompat.Button" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Back"
+                    android:id="@+id/backButton"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toLeftOf="@+id/time_label"
+                    android:layout_toStartOf="@+id/time_label"
+                    style="@style/Widget.AppCompat.Button" />
+
+            </LinearLayout>
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/main_banner">
+            </com.google.android.gms.ads.AdView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/game_controls_view"
+            android:visibility="invisible">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Speed Up"
+                android:id="@+id/speedUpButton"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                style="@style/Widget.AppCompat.Button" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="+"
+                android:id="@+id/cross_hair_text"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/game_info_view"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Distance"
+                android:id="@+id/distance_label"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Time"
+                android:id="@+id/time_label"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignLeft="@+id/speed_label"
+                android:layout_alignRight="@+id/speed_label" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Speed"
+                android:id="@+id/speed_label"
+                android:layout_below="@+id/time_label"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/time_text"
+                android:layout_above="@+id/speed_label"
+                android:layout_toRightOf="@+id/time_label"
+                android:layout_toEndOf="@+id/time_label"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/speed_text"
+                android:layout_alignTop="@+id/speed_label"
+                android:layout_toRightOf="@+id/speed_label"
+                android:layout_toEndOf="@+id/speed_label"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/distance_text"
+                android:layout_alignTop="@+id/speed_text"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Message"
+                android:id="@+id/splash_message_text"
+                android:alpha="0"
+                android:layout_below="@+id/distance_text"
+                android:layout_centerHorizontal="true" />
+
+        </RelativeLayout>
+    </FrameLayout>
+
+</FrameLayout>
